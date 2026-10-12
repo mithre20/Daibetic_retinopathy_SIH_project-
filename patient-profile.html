@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI DR Screen — Patient Profile Management.">
+    <title>Patient Profile — AI DR Screen</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="patient-portal.css">
+    <!-- Frame breakout: Ensure Patient Portal is always rendered standalone, never trapped inside staff live station iframe -->
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <div class="patient-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="portal-navbar-top">
+        <a href="/patient/dashboard" class="navbar-brand-wrap">
+            <img src="xairis_emblem.png" alt="AI DR Screen Logo" class="navbar-brand-logo">
+            <span class="navbar-brand-title">AI DR SCREEN <span class="patient-badge-portal" style="margin-left:6px;">PROFILE</span></span>
+        </a>
+
+        <nav class="navbar-nav-links">
+            <a href="/patient/dashboard" class="navbar-nav-btn">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/patient/profile" class="navbar-nav-btn active">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="navbar-user-chip">
+            <div class="user-chip-avatar" id="nav-avatar">P</div>
+            <div class="user-chip-info">
+                <span class="user-chip-name" id="nav-patient-name">Patient</span>
+                <span class="user-chip-id" id="nav-patient-id">P-00000</span>
+            </div>
+            <button class="btn-chip-logout" onclick="handleLogout()" title="Sign Out">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M13 3h3a2 2 0 012 2v10a2 2 0 01-2 2h-3M9 14l4-4-4-4M13 10H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="patient-container" style="max-width: 780px;">
+
+        <div class="report-top-actions">
+            <a href="/patient/dashboard" class="btn-back-dashboard">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+
+        <section class="patient-section-card">
+            <div class="section-card-header">
+                <h2 class="section-card-title">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="var(--patient-accent)" stroke-width="1.8"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="var(--patient-accent)" stroke-width="1.8"/></svg>
+                    <span>Patient Demographic Profile</span>
+                </h2>
+                <span class="patient-badge-portal" id="prof-id-badge">P-00000</span>
+            </div>
+
+            <!-- Notification banner -->
+            <div id="prof-alert" class="patient-alert" role="alert"></div>
+
+            <form id="form-patient-profile">
+                
+                <!-- Read-Only Critical Security Information -->
+                <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--patient-border); border-radius: 14px; padding: 16px 20px; margin-bottom: 22px;">
+                    <h4 style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--patient-accent); margin-bottom: 12px;">
+                        Immutable Security & Clinical Identifiers
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <span class="patient-label" style="font-size: 11px;">Patient ID (ABDM Format)</span>
+                            <div id="disp-patient-id" style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: #ffffff;">P-00000</div>
+                        </div>
+                        <div>
+                            <span class="patient-label" style="font-size: 11px;">Registered Email</span>
+                            <div id="disp-email" style="font-size: 14px; color: #e2e8f0;">you@example.com</div>
+                        </div>
+                        <div>
+                            <span class="patient-label" style="font-size: 11px;">Account Registered On</span>
+                            <div id="disp-created-at" style="font-size: 13px; color: var(--patient-text-secondary);">—</div>
+                        </div>
+                        <div>
+                            <span class="patient-label" style="font-size: 11px;">Medical History Isolation</span>
+                            <div style="font-size: 13px; color: #10b981; font-weight: 600;">Active • UID Verified</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editable Demographic Fields -->
+                <div class="patient-form-group">
+                    <label for="prof-name" class="patient-label">Full Name</label>
+                    <input type="text" id="prof-name" class="patient-input" required>
+                </div>
+
+                <div class="patient-form-row">
+                    <div class="patient-form-group">
+                        <label for="prof-age" class="patient-label">Age</label>
+                        <input type="number" id="prof-age" class="patient-input" min="1" max="120">
+                    </div>
+                    <div class="patient-form-group">
+                        <label for="prof-gender" class="patient-label">Gender</label>
+                        <select id="prof-gender" class="patient-input">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="patient-form-row">
+                    <div class="patient-form-group">
+                        <label for="prof-phone" class="patient-label">Phone Number</label>
+                        <input type="tel" id="prof-phone" class="patient-input" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="patient-form-group">
+                        <label for="prof-district" class="patient-label">District / Region</label>
+                        <input type="text" id="prof-district" class="patient-input" placeholder="e.g. Thirunallur, Tamil Nadu">
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-save-profile" class="btn-patient-primary" style="margin-top: 10px;">
+                    <span>Save Profile Changes</span>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        let currentPatient = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentPatient = window.PatientAuth.getCurrentUser();
+            if (!currentPatient) {
+                window.location.href = '/patient/login';
+                return;
+            }
+
+            populateForm(currentPatient);
+        });
+
+        function populateForm(p) {
+            document.getElementById('nav-patient-name').textContent = p.fullName || 'Patient';
+            document.getElementById('nav-patient-id').textContent = p.patientId || 'P-00000';
+            document.getElementById('nav-avatar').textContent = (p.fullName || 'P').charAt(0).toUpperCase();
+
+            document.getElementById('prof-id-badge').textContent = p.patientId || 'P-00000';
+            document.getElementById('disp-patient-id').textContent = p.patientId || 'P-00000';
+            document.getElementById('disp-email').textContent = p.email || '—';
+            document.getElementById('disp-created-at').textContent = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB') : 'Today';
+
+            document.getElementById('prof-name').value = p.fullName || '';
+            document.getElementById('prof-age').value = p.age || '';
+            document.getElementById('prof-gender').value = p.gender || '';
+            document.getElementById('prof-phone').value = p.phone || '';
+            document.getElementById('prof-district').value = p.district || '';
+        }
+
+        const form = document.getElementById('form-patient-profile');
+        const alertBox = document.getElementById('prof-alert');
+        const saveBtn = document.getElementById('btn-save-profile');
+
+        function showAlert(msg, isError = true) {
+            alertBox.textContent = msg;
+            alertBox.className = `patient-alert ${isError ? 'error' : 'success'}`;
+            alertBox.style.display = 'flex';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertBox.style.display = 'none';
+
+            const fullName = document.getElementById('prof-name').value.trim();
+            const age = document.getElementById('prof-age').value.trim();
+            const gender = document.getElementById('prof-gender').value;
+            const phone = document.getElementById('prof-phone').value.trim();
+            const district = document.getElementById('prof-district').value.trim();
+
+            if (!fullName) {
+                showAlert('Full Name cannot be empty.');
+                return;
+            }
+
+            try {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span>Saving Changes...</span>';
+
+                const updated = await window.PatientAuth.updateProfile({
+                    fullName,
+                    age: age ? parseInt(age, 10) : null,
+                    gender: gender || null,
+                    phone: phone || null,
+                    district: district || null
+                });
+
+                currentPatient = updated;
+                populateForm(updated);
+
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<span>Save Profile Changes</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+                showAlert('Profile changes saved successfully!', false);
+            } catch (err) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<span>Save Profile Changes</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                showAlert(err.message || 'Failed to update profile.');
+            }
+        });
+
+        // Dynamic navigation normalizer
+        if (!window.location.pathname.startsWith('/patient/')) {
+            document.querySelectorAll('a[href="/patient/dashboard"]').forEach(a => a.href = 'patient-dashboard.html');
+            document.querySelectorAll('a[href="/patient/profile"]').forEach(a => a.href = 'patient-profile.html');
+            document.querySelectorAll('a[href="/patient/login"]').forEach(a => a.href = 'patient-login.html');
+        }
+
+        async function handleLogout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                await window.PatientAuth.logout();
+                const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/login' : 'patient-login.html';
+                window.location.href = target;
+            }
+        }
+    </script>
+</body>
+</html>

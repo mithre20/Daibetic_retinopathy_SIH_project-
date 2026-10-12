@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================
+    // HELPER FUNCTIONS & ROLE-BASED ACCESS CONTROL
+    // ============================================================
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isDoctor() {
+      return isAuth() && (
+        request.auth.token.role == "CLINICAL_DOCTOR" ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "CLINICAL_DOCTOR" ||
+        exists(/databases/$(database)/documents/doctors/$(request.auth.uid))
+      );
+    }
+
+    // ============================================================
+    // 1. USER ROLES REGISTRY
+    // ============================================================
+    match /users/{userId} {
+      allow read: if isAuth() && (request.auth.uid == userId || isDoctor());
+      // Self-registration is strictly restricted to PATIENT role
+      allow create: if isAuth() && request.auth.uid == userId && request.resource.data.role == "PATIENT";
+      // Role modifications are restricted to administrative processes
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // 2. DOCTOR PROFILES COLLECTION
+    // ============================================================
+    match /doctors/{doctorId} {
+      allow read: if isAuth() && (request.auth.uid == doctorId || isDoctor());
+      allow create, update: if isAuth() && isDoctor() && request.auth.uid == doctorId;
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // 3. PATIENT PROFILES COLLECTION
+    // ============================================================
+    match /patients/{userId} {
+      // Patients can read their own profile; Doctors can read patient profiles for clinical review
+      allow read: if isAuth() && (request.auth.uid == userId || isDoctor());
+      
+      // Patients can only create their own profile upon registration
+      allow create: if isAuth() && request.auth.uid == userId
+                    && request.resource.data.email == request.auth.token.email;
+      
+      // Patients can only update non-sensitive demographic fields
+      allow update: if isAuth() && request.auth.uid == userId
+                    && request.resource.data.patientId == resource.data.patientId
+                    && request.resource.data.email == resource.data.email;
+                    
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // 4. SCREENINGS COLLECTION (IMMUTABLE AI ARTIFACTS)
+    // ============================================================
+    match /screenings/{screeningId} {
+      // Patients read own screenings; Authorized doctors can review screenings
+      allow read: if isAuth() && (resource.data.patientUid == request.auth.uid || isDoctor());
+      
+      // Screenings created by patient or screening technician
+      allow create: if isAuth() && (request.resource.data.patientUid == request.auth.uid || isDoctor());
+      
+      // Screening AI predictions, Grad-CAM, and U-Net outputs are strictly immutable
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // 5. CLINICAL REPORTS COLLECTION (DOCTOR ASSESSMENTS)
+    // ============================================================
+    match /clinicalReports/{reportId} {
+      // Patients can read clinical reports for their own records; Doctors can read all clinical reports
+      allow read: if isAuth() && (resource.data.patientUid == request.auth.uid || isDoctor());
+      
+      // Only authorized clinical doctors can author new clinical reports
+      allow create: if isDoctor() && request.resource.data.doctorUid == request.auth.uid;
+      
+      // Only the authoring doctor can edit their report; AI results are never modified
+      allow update: if isDoctor() && resource.data.doctorUid == request.auth.uid
+                    && request.resource.data.doctorUid == request.auth.uid;
+      
+      allow delete: if false;
+
+      // Report Version Audit Trail
+      match /versions/{versionId} {
+        allow read: if isAuth() && isDoctor();
+        allow create: if isDoctor() && request.resource.data.doctorUid == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+  }
+}
+

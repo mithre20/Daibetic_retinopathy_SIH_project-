@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Explainable AI for Diabetic Retinopathy Screening. AI That Sees. AI That Explains.">
+    <title>XAIRIS — Explainable AI for Diabetic Retinopathy Screening</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="hero.css">
+    <link rel="stylesheet" href="portal.css">
+    <link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+
+    <!-- ============================================================
+         LEVEL 0 — GLOBAL HERO CANVAS (100vh CINEMATIC HERO)
+         ============================================================ -->
+    <section class="hero-viewport" id="hero-section" aria-label="XAIRIS Cinematic Hero">
+        
+        <!-- LEVEL 10: Film Grain Texture Overlay -->
+        <div class="hero-grain-overlay" aria-hidden="true"></div>
+
+        <!-- LEVEL 2: Atmospheric Background, Doctor Staging & Clinical Bokeh -->
+        <div class="hero-atmosphere" aria-hidden="true">
+            <div class="hero-doctor-backdrop"></div>
+            <div class="hero-bokeh-cluster">
+                <div class="bokeh-orb bokeh-orb-1"></div>
+                <div class="bokeh-orb bokeh-orb-2"></div>
+                <div class="bokeh-orb bokeh-orb-3"></div>
+                <div class="bokeh-orb bokeh-orb-4"></div>
+            </div>
+            <div class="hero-grid-canvas"></div>
+        </div>
+
+        <!-- LEVEL 1: Minimal Hero Navigation (72–88px) -->
+        <header class="hero-navbar" id="hero-navbar">
+            <a href="#hero-section" class="hero-brand" aria-label="XAIRIS Home">
+                <div class="hero-brand-mark">
+                    <img src="xairis_emblem.png" alt="XAIRIS Logo" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.6));">
+                </div>
+                <div class="hero-brand-wordmark">
+                    <span>XAIRIS</span>
+                    <span class="hero-brand-tag">EYE CARE AI</span>
+                </div>
+            </a>
+
+            <div class="hero-nav-actions">
+                <button class="portal-theme-btn" id="hero-theme-toggle" onclick="if(window.setPortalTheme) window.setPortalTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon-sun" aria-hidden="true">☀️</span>
+                    <span class="theme-icon-moon" aria-hidden="true">🌙</span>
+                    <span class="theme-label">Theme</span>
+                </button>
+                <a href="doctor-dashboard.html" target="_top" class="hero-btn-nav-doctor" style="padding: 9px 16px; font-size: 11.5px; font-weight: 700; font-family: var(--font-hero-mono); letter-spacing: 0.8px; text-transform: uppercase; color: #00e5ff; background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.25s ease;" title="Clinical Doctor Portal: Review &amp; Sign Screenings">
+                    <span>DOCTOR PORTAL</span>
+                </a>
+                <a href="patient-login.html" target="_top" class="hero-btn-nav-patient" style="padding: 9px 16px; font-size: 11.5px; font-weight: 700; font-family: var(--font-hero-mono); letter-spacing: 0.8px; text-transform: uppercase; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.25s ease;" title="Patient Sign In &amp; Screening History">
+                    <span>PATIENT LOGIN</span>
+                </a>
+                <button class="hero-btn-nav-demo" id="hero-nav-demo-btn" onclick="switchPortalTab('login', true)" aria-label="Staff &amp; Doctor Login">
+                    <span>STAFF &amp; DOCTOR LOGIN</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- LEVEL 3 & 4: Primary Hero Content & Kinetic Typography -->
+        <div class="hero-body">
+            <div class="hero-content-col">
+                <!-- 3.1 Eyebrow -->
+                <div class="hero-eyebrow" id="hero-eyebrow">
+                    <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+                    <span>EXPLAINABLE OPHTHALMIC INTELLIGENCE &amp; DR SCREENING</span>
+                </div>
+
+                <!-- 4. Primary Headline (Word-by-Word Kinetic Reveal) -->
+                <h1 class="hero-headline" aria-label="XAIRIS — Leading AI Eye Care & Diabetic Retinopathy Screening">
+                    <span class="headline-brand-line">
+                        <span class="kinetic-word brand-accent">XAIRIS</span>
+                        <span class="kinetic-word brand-subline">EYE CARE</span>
+                    </span>
+                    <span class="headline-value-line">
+                        <span class="kinetic-word">LEADING</span>
+                        <span class="kinetic-word font-bold-navy">AI</span>
+                        <span class="kinetic-word font-bold-navy">EYE</span>
+                        <span class="kinetic-word font-bold-navy">CARE</span>
+                        <span class="kinetic-word">&amp;</span>
+                        <span class="kinetic-word">DR</span>
+                        <span class="kinetic-word">SCREENING</span>
+                    </span>
+                </h1>
+
+                <!-- 5. Supporting Copy -->
+                <p class="hero-supporting-copy" id="hero-supporting-copy">
+                    Autonomous AI for Diabetic Retinopathy Screening &amp; Retinal Health. Transforming fundus photography into transparent, multi-stage diagnostic intelligence.
+                </p>
+
+                <!-- 6. Primary & Secondary Actions -->
+                <div class="hero-actions-row" id="hero-actions-row">
+                    <button class="btn-magnetic-cta" id="hero-primary-cta" onclick="switchPortalTab('login', true)" aria-label="Explore XAIRIS Platform (Page 02: Staff Login)">
+                        <span>STAFF LOGIN</span>
+                        <span class="btn-arrow" aria-hidden="true">→</span>
+                    </button>
+                    <a href="patient-login.html" target="_top" class="btn-secondary-cta" id="hero-secondary-cta" style="display:inline-flex; align-items:center; text-decoration:none;" aria-label="Patient Portal Login (Personal Retinal Screening Records)">
+                        <span>PATIENT LOGIN</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEVEL 12 & 13: Bottom Information Strip -->
+        <footer class="hero-bottom-bar" id="hero-bottom-bar">
+            <div class="hero-spec-strip" aria-label="XAIRIS Capabilities">
+                <span>XAIRIS Retinal Engine</span>
+                <span>AI That Sees. AI That Explains.</span>
+                <span>EfficientNet-B0 & ResNet50</span>
+                <span>U-Net Lesion Segmentation</span>
+            </div>
+        </footer>
+    </section>
+
+    <!-- ============================================================
+         LIVE DIAGNOSTIC & SCREENING PORTAL
+         (Main Dashboard, MediVision, 5-Stage Pipeline, Staff Login)
+         ============================================================ -->
+    <div id="portal-app">
+        <!-- Liquid Glass 2.0 Ambient Refraction & Caustics Layer -->
+        <div class="portal-caustic-layer" aria-hidden="true">
+            <div class="caustic-orb orb-1"></div>
+            <div class="caustic-orb orb-2"></div>
+            <div class="caustic-orb orb-3"></div>
+        </div>
+
+        <!-- ================= MASTER FLOATING TOP BAR (Liquid Glass 2.0) ================= -->
+        <header id="portal-master-bar">
+            <!-- Left: Brand Identity -->
+            <div class="portal-brand" onclick="switchPortalTab('hero', true)" title="Return to Page 01: Hero Overview">
+                <div class="portal-brand-logo">
+                    <img src="xairis_emblem.png" alt="XAIRIS Logo" style="width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.6));">
+                </div>
+                <div class="portal-brand-title">
+                    <div class="portal-brand-main">
+                        XAIRIS
+                        <span class="portal-badge-unified">Live Station</span>
+                    </div>
+                    <span class="portal-brand-sub">Explainable AI for Diabetic Retinopathy Screening • 2026</span>
+                </div>
+            </div>
+
+            <!-- Center: View Switcher Tabs -->
+            <nav class="portal-nav-center" id="portal-nav-center" aria-label="Portal View Switcher">
+                <!-- Physically Connected Morphing Spring Glider Pill -->
+                <div class="portal-nav-glider" id="portal-nav-glider" aria-hidden="true"></div>
+
+                <button class="portal-nav-tab" id="portal-tab-hero" title="Alt+1: Return to Page 01: Hero Overview">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2.5L3 8.5V17.5H7.5V12H12.5V17.5H17V8.5L10 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                    </svg>
+                    <span>01 Hero</span>
+                </button>
+
+                <button class="portal-nav-tab" id="portal-tab-login" title="Alt+2: Open Page 02: Staff Login & Credentials">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M4 17c0-3.5 3-5.5 6-5.5s6 2 6 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    <span>02 Login</span>
+                </button>
+
+                <button class="portal-nav-tab" id="portal-tab-dashboard" title="Alt+3: Open Page 03: Main Screening Dashboard">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="3" width="6" height="6" rx="1.5" fill="currentColor"/>
+                        <rect x="11" y="3" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>
+                        <rect x="3" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>
+                        <rect x="11" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>
+                    </svg>
+                    <span>03 Dashboard</span>
+                </button>
+
+                <button class="portal-nav-tab" id="portal-tab-medivision" title="Alt+4: Open Page 04: MediVision Clinical View">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/>
+                        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.4"/>
+                        <circle cx="10" cy="10" r="1" fill="currentColor"/>
+                    </svg>
+                    <span>04 MediVision</span>
+                    <span class="portal-tab-badge">Pro</span>
+                </button>
+
+                <button class="portal-nav-tab" id="portal-tab-pipeline" title="Alt+5: Open Page 05: 5-Stage Explainable AI Pipeline">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M11 2L4 11h6l-1 7 7-9h-6l1-7z" fill="currentColor"/>
+                    </svg>
+                    <span>05 AI Pipeline</span>
+                </button>
+
+                <button class="portal-nav-tab" id="portal-tab-settings" title="Alt+6: Open Page 06: System Settings &amp; Preferences">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M4.9 15.1l1.4-1.4M13.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    <span>06 Settings</span>
+                </button>
+            </nav>
+
+            <!-- Right: Status, Page Stepper and User Profile -->
+            <div class="portal-header-right">
+                <!-- Sequential Page Stepper Widget -->
+                <div class="portal-page-stepper" id="portal-page-stepper" aria-label="Sequential Page Stepper">
+                    <button class="portal-step-btn" id="portal-step-prev" onclick="stepPage(-1)" title="Previous Page (ArrowLeft / Alt+Left)">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Prev</span>
+                    </button>
+                    <div class="portal-step-counter" id="portal-step-counter" title="Current Page in Sequence">
+                        <span class="portal-step-dot"></span>
+                        <span class="portal-step-cur" id="portal-step-cur-text">02</span>
+                        <span class="portal-step-sep">/</span>
+                        <span class="portal-step-total">06</span>
+                    </div>
+                    <button class="portal-step-btn" id="portal-step-next" onclick="stepPage(1)" title="Next Page (ArrowRight / Alt+Right)">
+                        <span>Next</span>
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="portal-theme-btn" id="portal-theme-toggle" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon-sun" aria-hidden="true">☀️</span>
+                    <span class="theme-icon-moon" aria-hidden="true">🌙</span>
+                    <span class="theme-label">Light</span>
+                </button>
+                <div class="portal-status-chip">
+                    <span class="portal-pulse-dot"></span>
+                    <span>Edge AI Online • ABDM</span>
+                </div>
+
+                <a href="doctor-dashboard.html" target="_top" class="portal-doctor-link" id="portal-doctor-portal-btn" style="display:inline-flex; align-items:center; gap:6px; background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.35); color: #00e5ff; padding: 6px 12px; border-radius: 8px; font-size: 0.775rem; font-weight: 600; text-decoration: none; transition: all 0.2s;" title="Access Clinical Doctor Portal">
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Doctor Portal</span>
+                </a>
+
+                <a href="patient-login.html" target="_top" class="portal-patient-link" id="portal-patient-portal-btn" style="display:inline-flex; align-items:center; gap:6px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 0.775rem; font-weight: 600; text-decoration: none; transition: all 0.2s;" title="Access Patient Portal &amp; Longitudinal History">
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M4 17c0-3.5 3-5.5 6-5.5s6 2 6 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    <span>Patient Portal</span>
+                </a>
+
+                <div class="portal-user-profile" id="portal-user-profile" title="Click to view profile options">
+                    <img src="doctor_avatar.jpg" alt="Doctor Avatar" class="portal-avatar-img" id="portal-user-avatar">
+                    <div class="portal-user-text">
+                        <span class="portal-user-name" id="portal-user-name">Dr. Anitha Rajan</span>
+                        <span class="portal-user-role" id="portal-user-role">Thirunallur PHC</span>
+                    </div>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="opacity:0.6; margin-left:4px;">
+                        <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+
+                    <!-- Profile Dropdown -->
+                    <div class="portal-dropdown-menu" id="portal-dropdown-menu">
+                        <div style="padding: 6px 12px 10px; border-bottom: 1px solid var(--glass-specular-border); font-size: 11px; color: var(--text-dim);">
+                            Logged in as Medical Lead
+                        </div>
+                        <a href="doctor-dashboard.html" target="_top" class="portal-dropdown-item" style="text-decoration:none;">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.5"/></svg>
+                            Clinical Doctor Portal
+                        </a>
+                        <a href="patient-login.html" target="_top" class="portal-dropdown-item" style="text-decoration:none;">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.5 3-5.5 6-5.5s6 2 6 5.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                            Patient Portal &amp; Records
+                        </a>
+                        <button class="portal-dropdown-item" id="portal-btn-switch-account">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5"/></svg>
+                            Switch / Sign In
+                        </button>
+                        <button class="portal-dropdown-item" onclick="switchPortalTab('pipeline')">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M11 2L4 11h6l-1 7 7-9h-6l1-7z" fill="currentColor"/></svg>
+                            Open Pipeline Model
+                        </button>
+                        <button class="portal-dropdown-item" onclick="switchPortalTab('settings')">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M4.9 15.1l1.4-1.4M13.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                            System Settings &amp; Preferences
+                        </button>
+                        <button class="portal-dropdown-item danger" id="portal-btn-signout">
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Sign Out Terminal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= MASTER VIEWS CONTAINER ================= -->
+        <main id="portal-views-container">
+            <!-- 1. Main Dashboard View -->
+            <iframe id="portal-panel-dashboard" class="portal-view-panel active" src="dashboard.html" title="Main Dashboard"></iframe>
+
+            <!-- 2. MediVision Clinical View -->
+            <iframe id="portal-panel-medivision" class="portal-view-panel" src="medivision.html" title="MediVision Clinical Station"></iframe>
+
+            <!-- 3. 5-Stage Explainable AI Pipeline View -->
+            <iframe id="portal-panel-pipeline" class="portal-view-panel" src="index_pipeline_original.html" title="5-Stage Explainable AI Pipeline"></iframe>
+
+            <!-- 4. Staff Authentication / Login View -->
+            <iframe id="portal-panel-login" class="portal-view-panel" src="login.html" title="Staff Authentication"></iframe>
+
+            <!-- 5. System Settings & Preferences View -->
+            <iframe id="portal-panel-settings" class="portal-view-panel" src="settings.html" title="System Settings &amp; Preferences"></iframe>
+        </main>
+    </div>
+
+    <!-- Master Toast Notification -->
+    <div id="portal-toast" role="status" aria-live="polite"></div>
+
+    <!-- Scripts: Hero Controller + Portal Controller -->
+    <script src="hero.js"></script>
+    <script src="portal.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Clinical Doctor Authentication. Secure access for certified ophthalmologists to review diabetic retinopathy screenings and author clinical reports.">
+    <title>Clinical Doctor Login — XAIRIS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="doctor-portal.css">
+
+    <!-- Auto-redirect to unified Staff & Doctor login -->
+    <script>
+        window.location.replace('login.html?role=doctor');
+    </script>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="doc-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Row -->
+    <header class="doc-navbar-top">
+        <div class="navbar-brand-wrap">
+            <a href="index.html#hero" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit;">
+                <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="navbar-brand-logo">
+                <span class="navbar-brand-title">XAIRIS <span class="badge-portal badge-doctor" style="margin-left:8px;">CLINICAL DOCTOR PORTAL</span></span>
+            </a>
+        </div>
+
+        <div class="doc-nav-links">
+            <button type="button" class="doc-nav-btn" id="btn-theme-toggle" onclick="toggleDoctorTheme()" title="Toggle Light / Dark Theme">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark</span>
+            </button>
+            <a href="/patient/login" class="doc-nav-btn" title="Open Patient Care Portal">
+                <span>👤 Patient Portal</span>
+            </a>
+            <a href="index.html#hero" class="doc-nav-btn" title="Return to Overview">
+                <span>← Home</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Auth Viewport -->
+    <main class="doc-container" style="display:flex; justify-content:center; align-items:center; min-height: calc(100vh - 80px);">
+        <div style="width: 100%; max-width: 480px; background: var(--doc-bg-card); border: 1px solid var(--doc-border); border-radius: var(--doc-radius); padding: 32px 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+            
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:16px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); margin-bottom:12px;">
+                    <img src="xairis_emblem.png" alt="Doctor Portal Emblem" style="width:40px; height:40px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(16,185,129,0.5));">
+                </div>
+                <h1 style="font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--doc-text-primary);">Doctor Authentication</h1>
+                <p style="font-size: 13px; color: var(--doc-text-secondary); margin-top: 4px;">
+                    Authorized Tele-Ophthalmology &amp; Clinical Decision Support Network
+                </p>
+                <div style="display:inline-block; margin-top:8px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); color: var(--doc-accent);">
+                    🔒 ABDM M2 Verified • Role-Restricted Access
+                </div>
+            </div>
+
+            <!-- Demo Profiles Bar -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--doc-border); border-radius: 10px; padding: 12px; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="font-size: 11.5px; font-weight: 700; color: var(--doc-emerald); text-transform: uppercase; letter-spacing: 0.5px;">⚡ Instant Demo Doctors</span>
+                    <span style="font-size: 10.5px; color: var(--doc-text-muted);">Click to fill</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <button type="button" onclick="quickFillDoctor('anitha')" class="doc-nav-btn" style="justify-content:space-between; width:100%; text-align:left; padding:8px 12px;">
+                        <span>🩺 Dr. Anitha Rajan, MD</span>
+                        <span style="font-size:10.5px; color:var(--doc-accent); font-family:var(--font-mono);">Chief Medical Lead</span>
+                    </button>
+                    <button type="button" onclick="quickFillDoctor('sundaram')" class="doc-nav-btn" style="justify-content:space-between; width:100%; text-align:left; padding:8px 12px;">
+                        <span>🩺 Dr. R. Sundaram, MBBS, MS</span>
+                        <span style="font-size:10.5px; color:#34d399; font-family:var(--font-mono);">Retina Specialist</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="doctor-alert" style="display:none; padding:10px 14px; border-radius:8px; font-size:12.5px; font-weight:500; margin-bottom:16px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); color:#fca5a5;"></div>
+
+            <!-- Auth Form -->
+            <form id="form-doctor-login" onsubmit="handleDoctorLogin(event)">
+                <div class="doc-form-group">
+                    <label for="doc-email" class="doc-form-label">Official Medical / Health Dept. Email</label>
+                    <input type="email" id="doc-email" class="doc-form-input" placeholder="doctor@phc.gov.in" required autocomplete="username">
+                </div>
+
+                <div class="doc-form-group">
+                    <label for="doc-password" class="doc-form-label">Security Password</label>
+                    <input type="password" id="doc-password" class="doc-form-input" placeholder="••••••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="btn-submit" class="btn-doc-primary" style="width:100%; justify-content:center; padding:11px; margin-top:8px;">
+                    <span>Authenticate &amp; Open Doctor Terminal</span>
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--doc-text-muted);">
+                Are you a Patient? <a href="/patient/login" style="color: var(--doc-accent); text-decoration: none; font-weight: 600;">Sign in to Patient Portal →</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        // 1. Theme Management
+        function applyDoctorTheme() {
+            const theme = localStorage.getItem('xairis_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+            if (text) text.textContent = theme === 'dark' ? 'Dark' : 'Light';
+        }
+
+        window.toggleDoctorTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('xairis_theme', next);
+            applyDoctorTheme();
+        };
+
+        // 2. Auth Check: If already signed in as doctor, redirect to dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            applyDoctorTheme();
+            if (window.DoctorAuth && window.DoctorAuth.isAuthenticated()) {
+                const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/doctor/dashboard' : 'doctor-dashboard.html';
+                window.location.href = target;
+            }
+        });
+
+        // 3. Quick Fill Demo Credentials
+        window.quickFillDoctor = function(type) {
+            const emailInput = document.getElementById('doc-email');
+            const passInput = document.getElementById('doc-password');
+            if (type === 'anitha') {
+                emailInput.value = 'dr.anitha@phc.gov.in';
+                passInput.value = 'vision2026';
+            } else if (type === 'sundaram') {
+                emailInput.value = 'dr.sundaram@vision.gov.in';
+                passInput.value = 'vision2026';
+            }
+            showAlert('', false);
+        };
+
+        function showAlert(msg, isError = true) {
+            const el = document.getElementById('doctor-alert');
+            if (!msg) {
+                el.style.display = 'none';
+                return;
+            }
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.background = isError ? 'rgba(244,63,94,0.15)' : 'rgba(16,185,129,0.15)';
+            el.style.borderColor = isError ? 'rgba(244,63,94,0.3)' : 'rgba(16,185,129,0.3)';
+            el.style.color = isError ? '#fca5a5' : '#86efac';
+        }
+
+        // 4. Handle Login Submit
+        window.handleDoctorLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('doc-email').value.trim();
+            const password = document.getElementById('doc-password').value;
+            const btn = document.getElementById('btn-submit');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>Verifying credentials...</span>';
+            showAlert('', false);
+
+            try {
+                const doctor = await window.DoctorAuth.login(email, password);
+                btn.innerHTML = '<span>Authentication successful ✓</span>';
+                
+                setTimeout(() => {
+                    const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/doctor/dashboard' : 'doctor-dashboard.html';
+                    window.location.href = target;
+                }, 400);
+            } catch (err) {
+                showAlert(err.message || 'Login failed.');
+                btn.disabled = false;
+                btn.innerHTML = '<span>Authenticate &amp; Open Doctor Terminal</span> <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            }
+        };
+    </script>
+</body>
+</html>

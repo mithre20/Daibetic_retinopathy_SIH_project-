@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI DR Screen — Patient Registration. Secure diabetic retinopathy screening history.">
+    <title>Patient Registration — AI DR Screen</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="patient-portal.css">
+    <!-- Frame breakout: Ensure Patient Portal is always rendered standalone, never trapped inside staff live station iframe -->
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <div class="patient-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="patient-auth-viewport">
+        <div class="patient-auth-card wide-card">
+            
+            <!-- Header -->
+            <div class="patient-auth-header">
+                <div class="patient-auth-logo-wrap">
+                    <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="patient-auth-logo-img">
+                    <span class="patient-auth-brand">XAIRIS</span>
+                    <span class="patient-badge-portal">PATIENT PORTAL</span>
+                </div>
+                <h1 class="patient-auth-title">Create Patient Account</h1>
+                <p class="patient-auth-subtitle">Register to track your diabetic retinopathy screenings and AI insights.</p>
+            </div>
+
+            <!-- Error / Success Alert -->
+            <div id="patient-alert" class="patient-alert" role="alert"></div>
+
+            <!-- Registration Form -->
+            <form id="form-patient-signup" novalidate>
+                
+                <div class="patient-form-group">
+                    <label for="reg-name" class="patient-label">Full Name *</label>
+                    <input type="text" id="reg-name" class="patient-input" placeholder="e.g. Ramesh Kumar" required autocomplete="name">
+                </div>
+
+                <div class="patient-form-row">
+                    <div class="patient-form-group">
+                        <label for="reg-email" class="patient-label">Email Address *</label>
+                        <input type="email" id="reg-email" class="patient-input" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                    <div class="patient-form-group">
+                        <label for="reg-phone" class="patient-label">Phone Number (Optional)</label>
+                        <input type="tel" id="reg-phone" class="patient-input" placeholder="+91 98765 43210" autocomplete="tel">
+                    </div>
+                </div>
+
+                <div class="patient-form-row">
+                    <div class="patient-form-group">
+                        <label for="reg-password" class="patient-label">Password * (Min 6 chars)</label>
+                        <div class="patient-input-wrap">
+                            <input type="password" id="reg-password" class="patient-input" placeholder="••••••••" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('reg-password', this)" title="Show / Hide Password" aria-label="Toggle password">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="patient-form-group">
+                        <label for="reg-confirm" class="patient-label">Confirm Password *</label>
+                        <div class="patient-input-wrap">
+                            <input type="password" id="reg-confirm" class="patient-input" placeholder="••••••••" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('reg-confirm', this)" title="Show / Hide Password" aria-label="Toggle password">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="patient-form-row">
+                    <div class="patient-form-group">
+                        <label for="reg-age" class="patient-label">Age / Date of Birth</label>
+                        <input type="number" id="reg-age" class="patient-input" placeholder="e.g. 58" min="1" max="120">
+                    </div>
+                    <div class="patient-form-group">
+                        <label for="reg-gender" class="patient-label">Gender (Optional)</label>
+                        <select id="reg-gender" class="patient-input">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="patient-form-group">
+                    <label for="reg-district" class="patient-label">District / Location (Optional)</label>
+                    <input type="text" id="reg-district" class="patient-input" placeholder="e.g. Thirunallur, Tamil Nadu">
+                </div>
+
+                <button type="submit" id="btn-submit-signup" class="btn-patient-primary">
+                    <span>Create Patient Account</span>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+
+            <div class="patient-auth-footer">
+                Already have an account? <a href="patient-login.html" id="link-signin">Sign in</a>
+                <br>
+                <a href="index.html#hero" target="_top" class="patient-back-link">
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Back to Main Portal</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        // Check if already authenticated
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.PatientAuth && window.PatientAuth.isAuthenticated()) {
+                window.location.href = '/patient/dashboard';
+            }
+        });
+
+        function togglePasswordVisibility(fieldId, btn) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            const isPwd = field.type === 'password';
+            field.type = isPwd ? 'text' : 'password';
+            btn.style.color = isPwd ? 'var(--patient-accent)' : 'var(--patient-text-muted)';
+        }
+
+        const form = document.getElementById('form-patient-signup');
+        const alertBox = document.getElementById('patient-alert');
+        const submitBtn = document.getElementById('btn-submit-signup');
+
+        function showAlert(msg, isError = true) {
+            alertBox.textContent = msg;
+            alertBox.className = `patient-alert ${isError ? 'error' : 'success'}`;
+            alertBox.style.display = 'flex';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertBox.style.display = 'none';
+
+            const fullName = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            const age = document.getElementById('reg-age').value.trim();
+            const gender = document.getElementById('reg-gender').value;
+            const phone = document.getElementById('reg-phone').value.trim();
+            const district = document.getElementById('reg-district').value.trim();
+
+            if (!fullName) {
+                showAlert('Please enter your full name.');
+                return;
+            }
+            if (!email || !email.includes('@')) {
+                showAlert('Please enter a valid email address.');
+                return;
+            }
+            if (!password || password.length < 6) {
+                showAlert('Password must be at least 6 characters.');
+                return;
+            }
+            if (password !== confirm) {
+                showAlert('Passwords do not match. Please verify.');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Creating Account...</span>';
+
+                const patient = await window.PatientAuth.signUp({
+                    fullName,
+                    email,
+                    password,
+                    age: age || null,
+                    gender: gender || null,
+                    phone: phone || null,
+                    district: district || null
+                });
+
+                showAlert(`Account created successfully! Patient ID: ${patient.patientId}. Redirecting...`, false);
+                setTimeout(() => {
+                    window.location.href = '/patient/dashboard';
+                }, 800);
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Create Patient Account</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                showAlert(err.message || 'Registration failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

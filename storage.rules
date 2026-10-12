@@ -1,0 +1,29 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Patients can access fundus scan images inside their own patient folder; Doctors can review
+    match /patients/{patientUid}/screenings/{screeningId}/{allPaths=**} {
+      allow read: if request.auth != null && (
+        request.auth.uid == patientUid ||
+        request.auth.token.role == "CLINICAL_DOCTOR"
+      );
+      allow write: if request.auth != null && request.auth.uid == patientUid
+                   && request.resource.size < 15 * 1024 * 1024 // max 15MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Clinical reports & supporting medical documents (PDF, JPG, PNG)
+    match /clinical-reports/{patientUid}/{screeningId}/{reportId}/{allPaths=**} {
+      allow read: if request.auth != null && (
+        request.auth.uid == patientUid ||
+        request.auth.token.role == "CLINICAL_DOCTOR"
+      );
+      allow write: if request.auth != null && (
+        request.auth.token.role == "CLINICAL_DOCTOR"
+      ) && request.resource.size < 15 * 1024 * 1024 // max 15MB
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
+    }
+  }
+}
+

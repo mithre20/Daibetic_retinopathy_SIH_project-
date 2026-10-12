@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Clinical Doctor Dashboard. Ophthalmic patient search, triage, review queues, and AI-assisted clinical report authoring.">
+    <title>Doctor Dashboard — XAIRIS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="doctor-portal.css">
+
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="doc-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="doc-navbar-top">
+        <div class="navbar-brand-wrap">
+            <a href="/doctor/dashboard" class="navbar-brand-wrap">
+                <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="navbar-brand-logo">
+                <span class="navbar-brand-title">XAIRIS <span class="badge-portal badge-doctor" style="margin-left:8px;">DOCTOR DASHBOARD</span></span>
+            </a>
+        </div>
+
+        <nav class="doc-nav-links">
+            <a href="#profile-section" class="doc-nav-btn">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                <span>Doctor Profile</span>
+            </a>
+            <a href="#patients-section" class="doc-nav-btn active">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+                <span>My Patients</span>
+            </a>
+            <a href="#triage-section" class="doc-nav-btn">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Triage Queue</span>
+            </a>
+            <a href="settings.html" class="doc-nav-btn" title="Open System Settings &amp; Preferences">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M4.9 15.1l1.4-1.4M13.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="doc-nav-btn" id="btn-theme-toggle" onclick="toggleDoctorTheme()" title="Toggle Light / Dark Theme" style="padding:6px 12px;">
+                <span id="theme-icon">🌙</span>
+            </button>
+
+            <div class="doc-user-chip">
+                <div class="doc-avatar" id="nav-doc-avatar">D</div>
+                <div class="doc-info">
+                    <span class="doc-name" id="nav-doc-name">Dr. Anitha Rajan</span>
+                    <span class="doc-role" id="nav-doc-role">Thirunallur PHC</span>
+                </div>
+                <button class="btn-chip-logout" onclick="handleDoctorLogout()" title="Sign Out of Doctor Terminal">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M13 3h3a2 2 0 012 2v10a2 2 0 01-2 2h-3M9 14l4-4-4-4M13 10H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Doctor Dashboard Container -->
+    <main class="doc-container">
+
+        <!-- Top Doctor Profile Card (Comprehensive Clinical Profile) -->
+        <section class="doc-profile-card" id="profile-section">
+            <div class="doc-profile-header">
+                <div class="doc-profile-identity">
+                    <div class="doc-profile-avatar-wrap">
+                        <div class="doc-profile-avatar" id="hero-doc-avatar">A</div>
+                        <div class="doc-profile-online-badge" title="Clinical Station Active"></div>
+                    </div>
+                    <div class="doc-profile-titles">
+                        <div class="doc-profile-name-row">
+                            <h1 class="doc-profile-fullname" id="profile-doc-fullname">Dr. Anitha Rajan, MD</h1>
+                            <span class="provenance-pill provenance-doctor">CLINICAL DOCTOR</span>
+                            <span class="provenance-pill" style="background:rgba(16,185,129,0.12); color:var(--doc-emerald); border-color:rgba(16,185,129,0.3);">● ACTIVE IN SESSION</span>
+                        </div>
+                        <div class="doc-profile-specialty" id="profile-doc-specialty">
+                            <span>Ophthalmologist &amp; Vitreoretinal Specialist</span>
+                            <span style="opacity:0.5;">•</span>
+                            <span id="profile-doc-center">Primary Health Center — Thirunallur</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-profile-actions">
+                    <button type="button" class="btn-doc-outline" onclick="openProfileEditModal()" title="Edit Doctor Profile Information">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" fill="currentColor"/></svg>
+                        <span>Edit Profile</span>
+                    </button>
+                    <button type="button" class="btn-doc-outline" onclick="window.print()" title="Print Clinical Patient Summary">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 4V2h10v2M5 14H3a1 1 0 01-1-1V8a1 1 0 011-1h14a1 1 0 011 1v5a1 1 0 01-1 1h-2M5 11h10v7H5v-7z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span>Print Registry</span>
+                    </button>
+                    <a href="#triage-section" class="btn-doc-primary" title="Jump to Screenings Awaiting Review">
+                        <span>Review Triage Queue ↓</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 6-Cell Doctor Credentials & Scope Grid -->
+            <div class="doc-profile-meta-grid">
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 8h6M7 12h4" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Medical Council Reg No.
+                    </span>
+                    <span class="doc-meta-val doc-meta-val-mono" id="profile-meta-mci">TN-MCI-2026-9481</span>
+                </div>
+
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 7v3l2 1" stroke="currentColor" stroke-width="1.6"/></svg>
+                        ABDM Practitioner ID
+                    </span>
+                    <span class="doc-meta-val doc-meta-val-mono" id="profile-meta-abdm">HPID-ABDM-TN-2026-0814</span>
+                </div>
+
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.6"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Primary Health Facility
+                    </span>
+                    <span class="doc-meta-val" id="profile-meta-facility">Primary Health Center — Thirunallur</span>
+                </div>
+
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM10 6v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Screening Camps Coverage
+                    </span>
+                    <span class="doc-meta-val" id="profile-meta-camps">Thirunallur PHC, Kallakurichi, Thiruvarur</span>
+                </div>
+
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M2.5 6.5A2.5 2.5 0 015 4h10a2.5 2.5 0 012.5 2.5v7a2.5 2.5 0 01-2.5 2.5H5a2.5 2.5 0 01-2.5-2.5v-7z" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Official Clinical Email
+                    </span>
+                    <span class="doc-meta-val" id="profile-meta-contact">dr.anitha@phc.gov.in</span>
+                </div>
+
+                <div class="doc-meta-item">
+                    <span class="doc-meta-label">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Clinical Digital Signature
+                    </span>
+                    <span class="doc-meta-val" style="color:var(--doc-emerald); display:flex; align-items:center; gap:5px;">
+                        <span>✓ SHA-256 Token Verified</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Metrics Grid -->
+        <section class="doc-kpi-grid">
+            <div class="doc-kpi-card">
+                <div class="doc-kpi-label">Registered Patients</div>
+                <div class="doc-kpi-value" id="kpi-patients">0</div>
+                <div class="doc-kpi-sub">Assigned to Dr. Anitha Rajan</div>
+            </div>
+
+            <div class="doc-kpi-card" style="border-left: 4px solid var(--doc-amber);">
+                <div class="doc-kpi-label">Pending Doctor Reviews</div>
+                <div class="doc-kpi-value" id="kpi-pending" style="color:#fbbf24;">0</div>
+                <div class="doc-kpi-sub">Awaiting clinical validation</div>
+            </div>
+
+            <div class="doc-kpi-card" style="border-left: 4px solid var(--doc-emerald);">
+                <div class="doc-kpi-label">Completed Reports</div>
+                <div class="doc-kpi-value" id="kpi-completed" style="color:#34d399;">0</div>
+                <div class="doc-kpi-sub">Doctor-signed dossiers</div>
+            </div>
+
+            <div class="doc-kpi-card" style="border-left: 4px solid var(--doc-rose);">
+                <div class="doc-kpi-label">High-Risk / Urgent Alerts</div>
+                <div class="doc-kpi-value" id="kpi-high-risk" style="color:#f43f5e;">0</div>
+                <div class="doc-kpi-sub">Severe NPDR / PDR identified</div>
+            </div>
+        </section>
+
+        <!-- Search Patient Section -->
+        <section class="doc-search-card" id="patients-section">
+            <div class="doc-search-header">
+                <div class="doc-search-title">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="var(--doc-accent)" stroke-width="1.8"/><path d="M13.5 13.5L17.5 17.5" stroke="var(--doc-accent)" stroke-width="1.8"/></svg>
+                    <span>My Assigned Patients &amp; Clinical Registry</span>
+                </div>
+                <span style="font-size:12px; color:var(--doc-text-muted);">
+                    Primary Search: <strong>Patient ID (e.g. P-10824)</strong> • Name • Location
+                </span>
+            </div>
+
+            <div class="doc-search-input-wrap">
+                <svg class="doc-search-icon" width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.6"/></svg>
+                <input type="text" id="patient-search-input" class="doc-search-input" placeholder="Type Patient ID (e.g. P-10824), Patient Name, or District..." oninput="handlePatientSearch(this.value)">
+            </div>
+
+            <div class="doc-filter-bar">
+                <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--doc-text-muted); margin-right:4px;">Filter Patients:</span>
+                <button type="button" class="doc-filter-chip active" onclick="applyPatientFilter('all', this)">All Patients</button>
+                <button type="button" class="doc-filter-chip" onclick="applyPatientFilter('pending', this)">⏳ Pending Review</button>
+                <button type="button" class="doc-filter-chip" onclick="applyPatientFilter('highrisk', this)">⚠️ High Risk (Severe/PDR)</button>
+                <button type="button" class="doc-filter-chip" onclick="applyPatientFilter('completed', this)">✓ Completed</button>
+            </div>
+        </section>
+
+        <!-- Patient Search Results / Registry Table -->
+        <section class="doc-table-card">
+            <div class="doc-table-header">
+                <h3 style="font-size: 15px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+                    <span>👥 Patient Registry</span>
+                    <span id="patient-count-badge" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); color: var(--doc-accent);">Loading...</span>
+                </h3>
+                <span style="font-size: 12px; color: var(--doc-text-muted);">Assigned to Doctor • Minimum necessary clinical disclosure</span>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Full Name</th>
+                            <th>Age / Gender</th>
+                            <th>District / Camp</th>
+                            <th>Latest Screening</th>
+                            <th>AI DR Grade</th>
+                            <th>Clinical Review</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patient-table-body">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 32px; color: var(--doc-text-muted);">
+                                Loading registered patient records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Recent Triage Queue -->
+        <section class="doc-table-card" id="triage-section">
+            <div class="doc-table-header">
+                <h3 style="font-size: 15px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+                    <span>⚡ Recent Screenings Triage Queue</span>
+                </h3>
+                <span style="font-size: 12px; color: var(--doc-text-muted);">Real-time tele-ophthalmology feed</span>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Screening ID</th>
+                            <th>Patient</th>
+                            <th>Eye</th>
+                            <th>AI DR Classification</th>
+                            <th>AI Confidence</th>
+                            <th>Risk Tier</th>
+                            <th>Doctor Review</th>
+                            <th style="text-align: right;">Review</th>
+                        </tr>
+                    </thead>
+                    <tbody id="triage-table-body">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 32px; color: var(--doc-text-muted);">
+                                Loading triage queue...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Doctor Profile Edit Modal -->
+    <div class="doc-modal-overlay" id="profile-edit-modal" onclick="if(event.target === this) closeProfileEditModal()">
+        <div class="doc-modal-box">
+            <div class="doc-modal-header">
+                <div class="doc-modal-title">
+                    <span>🩺</span>
+                    <span>Edit Doctor Profile Details</span>
+                </div>
+                <button type="button" class="doc-modal-close" onclick="closeProfileEditModal()" title="Close">&times;</button>
+            </div>
+            <form onsubmit="handleSaveDoctorProfile(event)">
+                <div class="doc-form-field">
+                    <label for="edit-doc-name">Full Name &amp; Degree</label>
+                    <input type="text" id="edit-doc-name" required value="Dr. Anitha Rajan, MD">
+                </div>
+                <div class="doc-form-field">
+                    <label for="edit-doc-specialty">Clinical Specialization</label>
+                    <input type="text" id="edit-doc-specialty" required value="Chief Medical Officer &amp; Vitreoretinal Specialist">
+                </div>
+                <div class="doc-form-field">
+                    <label for="edit-doc-center">Primary Health Facility / Hospital</label>
+                    <input type="text" id="edit-doc-center" required value="Primary Health Center — Thirunallur">
+                </div>
+                <div class="doc-form-field">
+                    <label for="edit-doc-license">MCI / State Medical Council Reg No.</label>
+                    <input type="text" id="edit-doc-license" required value="TN-MCI-2026-9481">
+                </div>
+                <div class="doc-form-field">
+                    <label for="edit-doc-abdm">ABDM Healthcare Professional ID (HPID)</label>
+                    <input type="text" id="edit-doc-abdm" required value="HPID-ABDM-TN-2026-0814">
+                </div>
+                <div class="doc-form-field">
+                    <label for="edit-doc-phone">Official Emergency Contact / Direct Line</label>
+                    <input type="text" id="edit-doc-phone" value="+91 94432 01080">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-doc-outline" onclick="closeProfileEditModal()">Cancel</button>
+                    <button type="submit" class="btn-doc-primary">Save Profile Updates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        let currentDoctor = null;
+        let allPatientsData = [];
+        let activeFilter = 'all';
+
+        // 1. Theme Management
+        function applyDoctorTheme() {
+            const theme = localStorage.getItem('xairis_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        window.toggleDoctorTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('xairis_theme', next);
+            applyDoctorTheme();
+        };
+
+        // 2. Auth Guard & Init
+        document.addEventListener('DOMContentLoaded', async () => {
+            applyDoctorTheme();
+
+            if (!window.DoctorAuth || !window.DoctorAuth.isAuthenticated()) {
+                window.location.href = 'login.html?role=doctor';
+                return;
+            }
+
+            currentDoctor = window.DoctorAuth.getCurrentDoctor();
+            populateDoctorInfo(currentDoctor);
+
+            await loadKPIs();
+            await loadPatientsList();
+            await loadTriageQueue();
+        });
+
+        function populateDoctorInfo(doc) {
+            if (!doc) return;
+            const initials = (doc.fullName || 'D').replace('Dr. ', '').charAt(0).toUpperCase();
+
+            // Navbar elements
+            const navName = document.getElementById('nav-doc-name');
+            const navRole = document.getElementById('nav-doc-role');
+            const navAvatar = document.getElementById('nav-doc-avatar');
+            if (navName) navName.textContent = doc.fullName || 'Dr. Anitha Rajan';
+            if (navRole) navRole.textContent = doc.hospitalOrClinic || doc.specialization || 'Clinical Doctor';
+            if (navAvatar) navAvatar.textContent = initials;
+
+            // Hero Profile Card elements
+            const profileName = document.getElementById('profile-doc-fullname');
+            const profileSpec = document.getElementById('profile-doc-specialty');
+            const profileCenter = document.getElementById('profile-doc-center');
+            const heroAvatar = document.getElementById('hero-doc-avatar');
+            if (profileName) profileName.textContent = doc.fullName || 'Dr. Anitha Rajan, MD';
+            if (profileSpec && doc.specialization) {
+                profileSpec.innerHTML = `
+                    <span>${doc.specialization}</span>
+                    <span style="opacity:0.5;">•</span>
+                    <span>${doc.hospitalOrClinic || 'Primary Health Center — Thirunallur'}</span>
+                `;
+            }
+            if (profileCenter && doc.hospitalOrClinic) profileCenter.textContent = doc.hospitalOrClinic;
+            if (heroAvatar) heroAvatar.textContent = initials;
+
+            // 6-Cell Credentials Grid
+            const mciEl = document.getElementById('profile-meta-mci');
+            const abdmEl = document.getElementById('profile-meta-abdm');
+            const facilityEl = document.getElementById('profile-meta-facility');
+            const campsEl = document.getElementById('profile-meta-camps');
+            const contactEl = document.getElementById('profile-meta-contact');
+
+            if (mciEl) mciEl.textContent = doc.licenseNumber || 'TN-MCI-2026-9481';
+            if (abdmEl) abdmEl.textContent = doc.abdmHpid || 'HPID-ABDM-TN-2026-0814';
+            if (facilityEl) facilityEl.textContent = doc.hospitalOrClinic || 'Primary Health Center — Thirunallur';
+            if (campsEl && doc.assignedCamps) campsEl.textContent = Array.isArray(doc.assignedCamps) ? doc.assignedCamps.join(', ') : doc.assignedCamps;
+            if (contactEl) contactEl.textContent = `${doc.email || 'dr.anitha@phc.gov.in'} ${doc.phone ? '• ' + doc.phone : ''}`;
+        }
+
+        window.handleDoctorLogout = async function() {
+            if (confirm('Sign out of Clinical Doctor Terminal?')) {
+                await window.DoctorAuth.logout();
+                window.location.href = 'login.html?role=doctor';
+            }
+        };
+
+        // 3. Profile Edit Modal Handlers
+        window.openProfileEditModal = function() {
+            const modal = document.getElementById('profile-edit-modal');
+            if (!modal) return;
+            if (currentDoctor) {
+                document.getElementById('edit-doc-name').value = currentDoctor.fullName || '';
+                document.getElementById('edit-doc-specialty').value = currentDoctor.specialization || '';
+                document.getElementById('edit-doc-center').value = currentDoctor.hospitalOrClinic || '';
+                document.getElementById('edit-doc-license').value = currentDoctor.licenseNumber || '';
+                document.getElementById('edit-doc-abdm').value = currentDoctor.abdmHpid || 'HPID-ABDM-TN-2026-0814';
+                document.getElementById('edit-doc-phone').value = currentDoctor.phone || '+91 94432 01080';
+            }
+            modal.classList.add('active');
+        };
+
+        window.closeProfileEditModal = function() {
+            const modal = document.getElementById('profile-edit-modal');
+            if (modal) modal.classList.remove('active');
+        };
+
+        window.handleSaveDoctorProfile = function(event) {
+            event.preventDefault();
+            const name = document.getElementById('edit-doc-name').value.trim();
+            const specialty = document.getElementById('edit-doc-specialty').value.trim();
+            const center = document.getElementById('edit-doc-center').value.trim();
+            const license = document.getElementById('edit-doc-license').value.trim();
+            const abdm = document.getElementById('edit-doc-abdm').value.trim();
+            const phone = document.getElementById('edit-doc-phone').value.trim();
+
+            if (!currentDoctor) currentDoctor = {};
+            currentDoctor.fullName = name;
+            currentDoctor.specialization = specialty;
+            currentDoctor.hospitalOrClinic = center;
+            currentDoctor.licenseNumber = license;
+            currentDoctor.abdmHpid = abdm;
+            currentDoctor.phone = phone;
+
+            localStorage.setItem('aidr_doctor_auth_user', JSON.stringify(currentDoctor));
+            populateDoctorInfo(currentDoctor);
+            closeProfileEditModal();
+            alert('Doctor profile credentials updated successfully.');
+        };
+
+        // 4. Load KPIs
+        async function loadKPIs() {
+            try {
+                const kpis = await window.DoctorClinical.getDashboardKPIs();
+                document.getElementById('kpi-patients').textContent = kpis.totalPatients;
+                document.getElementById('kpi-pending').textContent = kpis.pendingReviews;
+                document.getElementById('kpi-completed').textContent = kpis.completedReports;
+                document.getElementById('kpi-high-risk').textContent = kpis.highRiskAlerts;
+            } catch (e) {
+                console.warn('Error loading KPIs:', e);
+            }
+        }
+
+        // 5. Load Patients Registry Table & Filter Chips
+        async function loadPatientsList() {
+            try {
+                allPatientsData = await window.DoctorClinical.searchPatients('');
+                renderPatientsTable(allPatientsData);
+            } catch (e) {
+                console.error('Failed to load patients:', e);
+            }
+        }
+
+        window.applyPatientFilter = function(filterType, chipEl) {
+            activeFilter = filterType;
+            const chips = document.querySelectorAll('.doc-filter-chip');
+            chips.forEach(c => c.classList.remove('active'));
+            if (chipEl) chipEl.classList.add('active');
+
+            let filtered = allPatientsData;
+            if (filterType === 'pending') {
+                filtered = allPatientsData.filter(p => p.reviewStatus === 'PENDING');
+            } else if (filterType === 'highrisk') {
+                filtered = allPatientsData.filter(p => p.latestDrGrade !== null && p.latestDrGrade >= 3);
+            } else if (filterType === 'completed') {
+                filtered = allPatientsData.filter(p => p.reviewStatus === 'COMPLETED');
+            }
+
+            renderPatientsTable(filtered);
+        };
+
+        window.handlePatientSearch = async function(query) {
+            try {
+                const results = await window.DoctorClinical.searchPatients(query);
+                allPatientsData = results;
+                applyPatientFilter(activeFilter);
+            } catch (e) {
+                console.error('Search error:', e);
+            }
+        };
+
+        function renderPatientsTable(patients) {
+            const tbody = document.getElementById('patient-table-body');
+            const badge = document.getElementById('patient-count-badge');
+            badge.textContent = `${patients.length} Registered`;
+
+            if (!patients || patients.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:32px; color:var(--doc-text-muted);">
+                            No patients matched this filter or search query.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = patients.map(p => {
+                const gradeClass = p.latestDrGrade !== null ? `grade-${p.latestDrGrade}` : 'grade-0';
+                const statusHtml = p.reviewStatus === 'COMPLETED' 
+                    ? '<span class="status-pill status-completed">✓ Completed</span>'
+                    : (p.reviewStatus === 'PENDING' 
+                        ? '<span class="status-pill status-pending">⏳ Pending</span>'
+                        : '<span style="font-size:11.5px; color:var(--doc-text-muted);">No scans</span>');
+
+                const viewUrl = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html')
+                    ? `/doctor/patient/${p.uid}`
+                    : `doctor-patient.html?uid=${p.uid}`;
+
+                return `
+                    <tr>
+                        <td>
+                            <strong style="font-family:var(--font-mono); color:var(--doc-accent);">${p.patientId}</strong>
+                        </td>
+                        <td>
+                            <span style="font-weight:600;">${p.fullName}</span>
+                        </td>
+                        <td>${p.age} yrs • ${p.gender}</td>
+                        <td style="color:var(--doc-text-secondary); font-size:12.5px;">${p.district}</td>
+                        <td>
+                            ${p.latestScreeningDate ? new Date(p.latestScreeningDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                        </td>
+                        <td>
+                            ${p.latestDrGrade !== null ? `<span class="grade-badge ${gradeClass}">${p.latestDrLabel}</span>` : '—'}
+                        </td>
+                        <td>${statusHtml}</td>
+                        <td style="text-align:right;">
+                            <a href="${viewUrl}" class="btn-doc-outline" style="padding:5px 12px; font-size:12px;">
+                                <span>View Patient Profile</span>
+                                <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 6. Load Triage Queue
+        async function loadTriageQueue() {
+            try {
+                const triage = await window.DoctorClinical.getRecentScreeningRecords(10);
+                const tbody = document.getElementById('triage-table-body');
+
+                if (!triage || triage.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--doc-text-muted);">No screenings currently awaiting triage.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = triage.map(t => {
+                    const grade = t.drClass !== undefined ? t.drClass : 0;
+                    const gradeClass = `grade-${grade}`;
+                    const statusHtml = t.doctorReviewStatus === 'COMPLETED'
+                        ? '<span class="status-pill status-completed">✓ Reviewed</span>'
+                        : '<span class="status-pill status-pending">⏳ Review Needed</span>';
+
+                    const reviewUrl = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html')
+                        ? `/doctor/patient/${t.patientUid}/screening/${t.screeningId}`
+                        : `doctor-screening.html?uid=${t.patientUid}&id=${t.screeningId}`;
+
+                    return `
+                        <tr>
+                            <td><strong style="font-family:var(--font-mono); font-size:12px;">${t.screeningId}</strong></td>
+                            <td><strong>${t.patientName}</strong> <span style="font-size:11px; color:var(--doc-text-muted);">(${t.patientId})</span></td>
+                            <td>${t.eye || 'OD'}</td>
+                            <td><span class="grade-badge ${gradeClass}">${t.drLabel || 'Grade ' + grade}</span></td>
+                            <td style="font-family:var(--font-mono);">${t.confidence ? (t.confidence * 100).toFixed(1) + '%' : '92.4%'}</td>
+                            <td><span style="font-size:12px; font-weight:600; color:${grade >= 3 ? '#f43f5e' : (grade >= 1 ? '#fbbf24' : '#34d399')}">${t.riskLevel || 'Standard'}</span></td>
+                            <td>${statusHtml}</td>
+                            <td style="text-align:right;">
+                                <a href="${reviewUrl}" class="btn-doc-primary" style="padding:5px 12px; font-size:12px;">
+                                    <span>Review Scan</span>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.warn('Error loading triage:', e);
+            }
+        }
+    </script>
+</body>
+</html>

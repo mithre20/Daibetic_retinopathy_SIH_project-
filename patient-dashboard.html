@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Patient Care Dashboard. Complete diagnostic screening reports, DR progression tracking, and AI insights.">
+    <title>Patient Dashboard — XAIRIS Patient Portal</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="patient-portal.css">
+    <!-- Frame breakout: Ensure Patient Portal is always rendered standalone, never trapped inside staff live station iframe -->
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <div class="portal-app-layout">
+        
+        <!-- ================= 1. STABLE LEFT SIDEBAR ================= -->
+        <aside class="portal-sidebar" id="portal-sidebar" aria-label="Main Navigation">
+            <div>
+                <!-- Brand Lockup -->
+                <a href="patient-dashboard.html" class="sidebar-brand">
+                    <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="sidebar-logo">
+                    <div class="sidebar-brand-text">
+                        <span>XAIRIS</span>
+                        <span class="sidebar-brand-badge">PATIENT PORTAL</span>
+                    </div>
+                </a>
+
+                <!-- Navigation Menu -->
+                <ul class="sidebar-menu-list">
+                    <li class="sidebar-menu-item">
+                        <a href="patient-dashboard.html" class="active" title="Patient Dashboard & Insights">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <button type="button" onclick="showNewScreeningModal()" title="Start New Retinal Screening">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            <span>New Screening</span>
+                        </button>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#history-section" title="View Diagnostic Records Dossier">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4zM8 2v4M12 2v4M4 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <span>My Records</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="javascript:void(0)" onclick="filterDoctorReviewedReports()" title="View Doctor Verified Reports">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Doctor Reports</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="patient-profile.html" title="Patient Profile & ABDM Health ID">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.8"/></svg>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <button type="button" onclick="showSettingsModal()" title="Preferences & Compliance">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M16.2 13.5l1.4 2.4-2.8 1.6-1.4-2.4c-.6.2-1.2.4-1.8.5l-.4 2.8H8.8l-.4-2.8c-.6-.1-1.2-.3-1.8-.5L5.2 17.5 2.4 15.9l1.4-2.4c-.3-.5-.5-1.1-.6-1.7L.4 11.4v-3.2l2.8-.4c.1-.6.3-1.2.6-1.7L2.4 3.7 5.2 2.1l1.4 2.4c.6-.2 1.2-.4 1.8-.5l.4-2.8h3.2l.4 2.8c.6.1 1.2.3 1.8.5l1.4-2.4 2.8 1.6-1.4 2.4c.3.5.5 1.1.6 1.7l2.8.4v3.2l-2.8.4c-.1.6-.3 1.2-.6 1.7z" stroke="currentColor" stroke-width="1.5"/></svg>
+                            <span>Settings</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar User Card & Logout -->
+            <div class="sidebar-footer">
+                <div class="sidebar-user-card">
+                    <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                        <div class="user-chip-avatar" id="sidebar-avatar" style="width:32px; height:32px; font-size:13px;">P</div>
+                        <div style="min-width:0;">
+                            <div id="sidebar-patient-name" style="font-size:13px; font-weight:700; color:var(--patient-text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Patient</div>
+                            <div id="sidebar-patient-id" style="font-size:11px; font-family:var(--font-mono); color:var(--patient-text-muted);">P-00000</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-chip-logout" onclick="handleLogout()" title="Sign Out">
+                        <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M13 3h3a2 2 0 012 2v10a2 2 0 01-2 2h-3M9 14l4-4-4-4M13 10H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================= 2. MAIN CONTENT AREA ================= -->
+        <div class="portal-main-area">
+            
+            <!-- Clean Header -->
+            <header class="portal-header-calm">
+                <!-- Global Report Search Input -->
+                <div class="header-search-wrap">
+                    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--patient-text-muted);"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><path d="M12.5 12.5L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    <input type="text" id="report-search-input" class="header-search-input" placeholder="Search records by date, doctor, or diagnosis..." oninput="handleReportSearch(this.value)">
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <span style="font-size:12px; color:var(--patient-text-muted); display:inline-flex; align-items:center; gap:6px;">
+                        <span style="width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+                        <span>ABDM M2 Verified</span>
+                    </span>
+
+                    <button type="button" class="btn-header-action" id="btn-theme-toggle" onclick="toggleDashboardTheme()" title="Toggle Light / Dark Theme">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+
+                    <button type="button" class="btn-header-action" onclick="showNotificationPanel()" title="Notifications & Doctor Review Alerts">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a2 2 0 002-2H8a2 2 0 002 2z" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </button>
+
+                    <div class="navbar-user-chip" style="padding:4px 10px; background:var(--patient-bg-subsurface);">
+                        <div class="user-chip-avatar" id="nav-avatar">P</div>
+                        <div class="user-chip-info">
+                            <span class="user-chip-name" id="nav-patient-name">Loading...</span>
+                            <span class="user-chip-id" id="nav-patient-id">P-00000</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Viewport -->
+            <main class="dashboard-viewport">
+                
+                <!-- ================= 3. HERO / WELCOME AREA ================= -->
+                <section class="welcome-hero-2026">
+                    <div class="welcome-text-col">
+                        <h1><span id="welcome-greeting">Welcome back</span>, <span id="welcome-name">Patient</span> 👋</h1>
+                        <p>Your diabetic retinopathy screening history, AI insights, and clinical reviews in one place.</p>
+                        <div class="welcome-meta-chips">
+                            <span class="welcome-chip">Patient ID: <strong id="welcome-id" style="color:var(--patient-accent);">P-00000</strong></span>
+                            <span class="welcome-chip">🔒 Encrypted ABDM Vault</span>
+                            <span class="welcome-chip">🩺 Clinical Tele-Ophthalmology Linked</span>
+                        </div>
+                    </div>
+
+                    <div class="welcome-cta-group">
+                        <button type="button" class="btn-primary-2026" onclick="showNewScreeningModal()" title="Start New Retinal Screening">
+                            <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+                            <span>Start New Screening</span>
+                        </button>
+                        <button type="button" class="btn-secondary-2026" onclick="window.print()" title="Print complete patient retinal health dossier">
+                            <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M4 6V2h12v4M4 12H2.5A1.5 1.5 0 011 10.5v-3A1.5 1.5 0 012.5 6h15A1.5 1.5 0 0119 7.5v3a1.5 1.5 0 01-1.5 1.5H16" stroke="currentColor" stroke-width="1.6"/><path d="M4 9h12v7H4z" stroke="currentColor" stroke-width="1.6"/></svg>
+                            <span>Print Dossier</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ================= 4. INTELLIGENT BENTO STATISTICS ================= -->
+                <section class="bento-stats-grid" aria-label="Key Retinal Metrics">
+                    <!-- Stat 1: Total Screenings -->
+                    <div class="bento-stat-card">
+                        <div class="bento-stat-top">
+                            <span class="bento-stat-label">Total Screenings</span>
+                            <div class="bento-stat-icon">
+                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4zM8 2v4M12 2v4M4 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            </div>
+                        </div>
+                        <div class="bento-stat-val" id="stat-total-screenings">0</div>
+                        <div class="bento-stat-sub">
+                            <span style="color:#10b981; font-weight:600;">+1 this month</span>
+                            <span>• Complete history</span>
+                        </div>
+                    </div>
+
+                    <!-- Stat 2: Latest Result -->
+                    <div class="bento-stat-card">
+                        <div class="bento-stat-top">
+                            <span class="bento-stat-label">Latest Result</span>
+                            <div class="bento-stat-icon" style="color:var(--patient-amber);">
+                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.8"/></svg>
+                            </div>
+                        </div>
+                        <div class="bento-stat-val" id="stat-latest-result" style="font-size:20px;">Loading...</div>
+                        <div class="bento-stat-sub" id="stat-latest-date">Latest screening date</div>
+                    </div>
+
+                    <!-- Stat 3: Current Risk -->
+                    <div class="bento-stat-card">
+                        <div class="bento-stat-top">
+                            <span class="bento-stat-label">Current Clinical Risk</span>
+                            <div class="bento-stat-icon" style="color:var(--patient-rose);">
+                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3zM10 8v4M10 14h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div class="bento-stat-val" id="stat-current-risk" style="font-size:20px;">Normal</div>
+                        <div class="bento-stat-sub" id="stat-risk-sub">Eye exam advice</div>
+                    </div>
+
+                    <!-- Stat 4: Doctor Review -->
+                    <div class="bento-stat-card">
+                        <div class="bento-stat-top">
+                            <span class="bento-stat-label">Doctor Review</span>
+                            <div class="bento-stat-icon" style="color:#10b981;">
+                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div class="bento-stat-val" id="stat-doctor-review-status" style="font-size:20px; color:#10b981;">Reviewed ✓</div>
+                        <div class="bento-stat-sub" id="stat-doctor-review-sub">Dr. Anitha Rajan</div>
+                    </div>
+                </section>
+
+                <!-- ================= 5. TWO-COLUMN BENTO: AI INSIGHT & PROGRESSION ================= -->
+                <section class="bento-columns-row">
+                    <!-- Left: AI Screening Insight Card -->
+                    <div class="bento-panel-card">
+                        <div class="panel-card-head">
+                            <div class="panel-card-title">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" fill="var(--patient-accent)"/></svg>
+                                <span>AI Screening Insight</span>
+                            </div>
+                            <span class="badge-provenance-ai">SOURCE: AI AUTOMATION</span>
+                        </div>
+
+                        <div class="ai-insight-box">
+                            <div class="ai-insight-top-row">
+                                <span class="ai-diagnosis-title" id="insight-dr-grade">Moderate Diabetic Retinopathy</span>
+                                <span class="badge-risk moderate" id="insight-risk-badge">Moderate</span>
+                            </div>
+
+                            <p style="font-size:12.5px; color:var(--patient-text-secondary); margin-bottom:8px;">
+                                Automated convolutional neural network analysis computed via EfficientNet-B0 and U-Net microvascular segmentation.
+                            </p>
+
+                            <div class="ai-metric-pills">
+                                <span class="ai-pill" id="insight-confidence">94.2% Confidence</span>
+                                <span class="ai-pill" id="insight-quality" style="color:#10b981; border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.1);">✓ Diagnostic Quality</span>
+                            </div>
+
+                            <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--patient-border-subtle);">
+                                <div style="font-size:11.5px; font-weight:600; color:var(--patient-text-muted); text-transform:uppercase; margin-bottom:4px;">Detected Lesions</div>
+                                <div id="insight-lesions" style="font-size:12.5px; color:var(--patient-text-secondary); line-height:1.4;">
+                                    14 Microaneurysms • 6 Hemorrhages • 4 Hard Exudates
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+                            <span style="font-size:11.5px; color:var(--patient-text-muted);">Non-binding AI prediction • Reviewed by doctor</span>
+                            <a href="patient-screening.html" id="insight-action-btn" class="btn-explain-trigger" title="Inspect Grad-CAM and U-Net Overlays">
+                                <span>Why this result? View Heatmap →</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right: DR Severity Progression Timeline -->
+                    <div class="bento-panel-card">
+                        <div class="panel-card-head">
+                            <div class="panel-card-title">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 17V3M3 17h14M6 13l4-5 3 3 4-6" stroke="var(--patient-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span>DR Severity Over Time</span>
+                            </div>
+                            <span style="font-size:11.5px; color:var(--patient-text-muted);">Grade 0 → Grade 4</span>
+                        </div>
+
+                        <!-- Trend Delta Summary -->
+                        <div id="progression-delta-summary" style="font-size:12.5px; color:var(--patient-text-secondary); margin-bottom:12px;">
+                            Latest: <strong>Moderate DR</strong> • Previous: <strong>Mild DR</strong> • Trend: <span style="color:var(--patient-amber); font-weight:600;">Increased severity</span>
+                        </div>
+
+                        <div class="progression-chart-wrap" style="height:190px;">
+                            <canvas id="progressionCanvas" class="progression-canvas"></canvas>
+                            <div id="progression-empty" class="progression-empty-msg" style="display:none;">
+                                <p>Progression timeline will populate as multiple chronological scans are completed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= 6. ALL PATIENT DIAGNOSTIC REPORTS DOSSIER ================= -->
+                <section class="screening-table-card" id="history-section">
+                    <div class="panel-card-head" style="margin-bottom:14px;">
+                        <div>
+                            <h3 class="panel-card-title">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4zM8 2v4M12 2v4M4 8h12" stroke="var(--patient-accent)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                                <span>Diagnostic Screening Reports Dossier</span>
+                            </h3>
+                            <p style="font-size:12.5px; color:var(--patient-text-secondary); margin-top:3px;">
+                                Chronological archive of tele-ophthalmic screening evaluations, multimodal AI outputs, and doctor assessments.
+                            </p>
+                        </div>
+                        <span id="history-count" style="font-size:12px; font-weight:700; color:var(--patient-accent); background:rgba(2,132,199,0.1); padding:4px 10px; border-radius:8px; border:1px solid rgba(2,132,199,0.25);">
+                            Showing 0 reports
+                        </span>
+                    </div>
+
+                    <!-- Filter Controls Bar -->
+                    <div class="reports-filter-bar" style="margin-bottom:18px;">
+                        <div class="report-filter-pills" role="tablist">
+                            <button type="button" class="report-filter-pill active" onclick="setReportFilter('all', this)">All Reports</button>
+                            <button type="button" class="report-filter-pill" onclick="setReportFilter('referable', this)">⚠️ Action Required / Referable</button>
+                            <button type="button" class="report-filter-pill" onclick="setReportFilter('normal', this)">✓ Normal / Routine</button>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="history-loading" class="empty-state-wrap">
+                        <p>Retrieving diagnostic records from secure ABDM vault...</p>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="history-empty" class="empty-state-wrap" style="display:none;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        <h4 style="margin-top:6px; color:var(--patient-text-primary);">No matching reports found</h4>
+                        <p style="margin-top:3px; font-size:13px; color:var(--patient-text-secondary);">Try clearing your search query or adjusting the filter tab.</p>
+                    </div>
+
+                    <!-- History List / Cards -->
+                    <div id="history-list" class="screenings-list"></div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- New Screening Guidance Modal -->
+    <div id="screening-info-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px);">
+        <div style="background:var(--patient-bg-card); border:1px solid var(--patient-border); border-radius:var(--radius-lg); padding:28px; max-width:500px; width:100%; box-shadow:var(--patient-shadow-lg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 style="font-size:18px; font-weight:700; color:var(--patient-text-primary); display:flex; align-items:center; gap:8px;">
+                    <span>📷</span>
+                    <span>Start Retinal Screening</span>
+                </h3>
+                <button type="button" onclick="closeNewScreeningModal()" style="background:none; border:none; color:var(--patient-text-muted); font-size:20px; cursor:pointer;">&times;</button>
+            </div>
+            <p style="font-size:13px; color:var(--patient-text-secondary); line-height:1.5; margin-bottom:16px;">
+                Fundus photograph acquisition is conducted at your designated <strong>Primary Health Centre (PHC)</strong> or screening camp using an ophthalmic fundus camera. Once your eye scan is uploaded by the health worker, automated AI inferences and clinical doctor reports will immediately appear on this dashboard.
+            </p>
+            <div style="background:var(--patient-bg-subsurface); border:1px solid var(--patient-border); border-radius:var(--radius-md); padding:14px; margin-bottom:18px; font-size:12px;">
+                <div style="font-weight:600; color:var(--patient-accent); margin-bottom:4px;">🏥 Assigned Primary Health Centre</div>
+                <div style="color:var(--patient-text-primary); font-weight:600;">Thirunallur Community Health Centre</div>
+                <div style="color:var(--patient-text-muted);">Thiruvarur District, Tamil Nadu • Camp Timings: 9:00 AM – 4:00 PM</div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn-secondary-2026" onclick="closeNewScreeningModal()">Close</button>
+                <button type="button" class="btn-primary-2026" onclick="closeNewScreeningModal(); alert('Screening appointment confirmed. Please bring your ABHA card (91-4521-8890-1234) to the camp.');">Confirm Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden element for compatibility -->
+    <div id="stat-patient-id" style="display:none;"></div>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // -------------------------------------------------------------
+        // 1. STATE & THEME MANAGEMENT
+        // -------------------------------------------------------------
+        let currentPatient = null;
+        let patientScreenings = [];
+        let activeFilter = 'all';
+        let searchQuery = '';
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('aidr_patient_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        window.toggleDashboardTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('aidr_patient_theme', next);
+            updateThemeIcon(next);
+            if (patientScreenings.length > 0) renderProgressionChart(patientScreenings);
+        };
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // -------------------------------------------------------------
+        // 2. AUTHENTICATION & ROUTE GUARD
+        // -------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+
+            if (!window.PatientAuth) {
+                console.error('PatientAuthService not loaded.');
+                window.location.href = 'patient-login.html';
+                return;
+            }
+
+            if (!window.PatientAuth.isAuthenticated()) {
+                window.location.href = 'patient-login.html';
+                return;
+            }
+
+            currentPatient = window.PatientAuth.getCurrentUser();
+            populatePatientHeader(currentPatient);
+            await loadScreeningHistory();
+        });
+
+        // -------------------------------------------------------------
+        // 3. POPULATE PATIENT DETAILS
+        // -------------------------------------------------------------
+        function populatePatientHeader(patient) {
+            if (!patient) return;
+
+            const name = patient.fullName || 'Patient';
+            const id = patient.patientId || 'P-00000';
+            const initials = name.charAt(0).toUpperCase();
+
+            // Set greeting based on time of day
+            const hour = new Date().getHours();
+            const greeting = hour < 12 ? 'Good morning' : (hour < 18 ? 'Good afternoon' : 'Good evening');
+            const welcomeGreetingEl = document.getElementById('welcome-greeting');
+            if (welcomeGreetingEl) welcomeGreetingEl.textContent = greeting;
+
+            document.getElementById('nav-patient-name').textContent = name;
+            document.getElementById('nav-patient-id').textContent = id;
+            document.getElementById('sidebar-patient-name').textContent = name;
+            document.getElementById('sidebar-patient-id').textContent = id;
+            document.getElementById('welcome-name').textContent = name;
+            document.getElementById('welcome-id').textContent = id;
+            document.getElementById('stat-patient-id').textContent = id;
+
+            document.getElementById('nav-avatar').textContent = initials;
+            document.getElementById('sidebar-avatar').textContent = initials;
+        }
+
+        // -------------------------------------------------------------
+        // 4. LOAD & RENDER ALL SCREENING REPORTS
+        // -------------------------------------------------------------
+        async function loadScreeningHistory() {
+            const loadingEl = document.getElementById('history-loading');
+            const emptyEl = document.getElementById('history-empty');
+            const listEl = document.getElementById('history-list');
+
+            try {
+                patientScreenings = await window.PatientScreening.getPatientScreenings();
+                
+                // Enrich each screening with authorized Clinical Doctor review if present
+                for (let i = 0; i < patientScreenings.length; i++) {
+                    const s = patientScreenings[i];
+                    try {
+                        const docReports = await window.PatientScreening.getDoctorReportsForScreening(s.screeningId);
+                        if (docReports && docReports.length > 0) {
+                            s.doctorReview = docReports[docReports.length - 1]; // Latest review
+                        }
+                    } catch (e) {
+                        console.warn('Could not check doctor review for', s.screeningId, e);
+                    }
+                }
+
+                loadingEl.style.display = 'none';
+
+                // Update summary stats
+                document.getElementById('stat-total-screenings').textContent = patientScreenings.length;
+
+                if (patientScreenings.length === 0) {
+                    emptyEl.style.display = 'block';
+                    listEl.style.display = 'none';
+                    document.getElementById('progression-empty').style.display = 'flex';
+                    document.getElementById('stat-latest-result').textContent = 'No Scans';
+                    return;
+                }
+
+                // Latest Screening
+                const latest = patientScreenings[0];
+                document.getElementById('stat-latest-result').textContent = latest.drLabel || `Grade ${latest.drClass}`;
+                document.getElementById('stat-latest-date').textContent = formatDate(latest.createdAt);
+
+                // Current Risk Level
+                const riskEl = document.getElementById('stat-current-risk');
+                const riskSubEl = document.getElementById('stat-risk-sub');
+                riskEl.textContent = latest.riskLevel || 'Low Risk';
+
+                if (latest.riskLevel && latest.riskLevel.includes('High')) {
+                    riskEl.style.color = 'var(--patient-rose)';
+                    riskSubEl.textContent = 'Urgent Clinical Referral';
+                } else if (latest.riskLevel && latest.riskLevel.includes('Moderate')) {
+                    riskEl.style.color = 'var(--patient-amber)';
+                    riskSubEl.textContent = 'Follow-up within 6 weeks';
+                } else {
+                    riskEl.style.color = 'var(--patient-emerald)';
+                    riskSubEl.textContent = 'Annual routine surveillance';
+                }
+
+                // Doctor Review Bento Metric
+                const docStatusEl = document.getElementById('stat-doctor-review-status');
+                const docSubEl = document.getElementById('stat-doctor-review-sub');
+                if (docStatusEl && docSubEl) {
+                    if (latest.doctorReview) {
+                        docStatusEl.textContent = 'Reviewed ✓';
+                        docStatusEl.style.color = '#10b981';
+                        docSubEl.textContent = `${latest.doctorReview.doctorName || 'Clinical Doctor'}`;
+                    } else {
+                        docStatusEl.textContent = 'Pending ⏳';
+                        docStatusEl.style.color = '#f59e0b';
+                        docSubEl.textContent = 'Queued for specialist evaluation';
+                    }
+                }
+
+                // AI Screening Insight Card Elements
+                const insightGrade = document.getElementById('insight-dr-grade');
+                const insightConf = document.getElementById('insight-confidence');
+                const insightQuality = document.getElementById('insight-quality');
+                const insightLesions = document.getElementById('insight-lesions');
+                const insightBtn = document.getElementById('insight-action-btn');
+                const insightRisk = document.getElementById('insight-risk-badge');
+
+                if (insightGrade) insightGrade.textContent = latest.drLabel || `Grade ${latest.drClass} DR`;
+                if (insightConf) insightConf.textContent = `${latest.confidence ? (latest.confidence * 100).toFixed(1) : '94.2'}% Confidence`;
+                if (insightQuality) insightQuality.textContent = `✓ ${latest.imageQualityLabel || 'Diagnostic Quality'}`;
+                if (insightBtn) insightBtn.href = `patient-screening.html?id=${latest.screeningId}`;
+                if (insightRisk) {
+                    insightRisk.textContent = latest.riskLevel || 'Normal';
+                    const rl = (latest.riskLevel || '').toLowerCase();
+                    insightRisk.className = `badge-risk ${rl.includes('high') ? 'high' : (rl.includes('mod') ? 'moderate' : 'low')}`;
+                }
+
+                if (insightLesions) {
+                    const lesions = latest.detectedLesions || {};
+                    const parts = [];
+                    if (lesions.microaneurysms || lesions.microaneurysm) parts.push(`${lesions.microaneurysms || 'Present'} Microaneurysms`);
+                    if (lesions.hemorrhages || lesions.hemorrhage) parts.push(`${lesions.hemorrhages || 'Present'} Hemorrhages`);
+                    if (lesions.exudates || lesions.hard_exudate) parts.push(`${lesions.exudates || 'Present'} Hard Exudates`);
+                    if (lesions.soft_exudate || lesions.cottonWoolSpots) parts.push('Cotton Wool Spots');
+                    insightLesions.textContent = parts.length > 0 ? parts.join(' • ') : 'No significant microvascular lesions detected';
+                }
+
+                // DR Progression Delta Summary
+                const deltaSummaryEl = document.getElementById('progression-delta-summary');
+                if (deltaSummaryEl) {
+                    if (patientScreenings.length >= 2) {
+                        const prev = patientScreenings[1];
+                        const latestGrade = latest.drClass || 0;
+                        const prevGrade = prev.drClass || 0;
+                        let trendText = 'Stable';
+                        if (latestGrade > prevGrade) trendText = 'Increased severity (Follow-up advised)';
+                        else if (latestGrade < prevGrade) trendText = 'Severity improvement';
+                        deltaSummaryEl.innerHTML = `Latest: <strong>${latest.drLabel || `Grade ${latestGrade}`}</strong> • Previous: <strong>${prev.drLabel || `Grade ${prevGrade}`}</strong> • Trend: <span style="color:${latestGrade > prevGrade ? 'var(--patient-rose)' : 'var(--patient-emerald)'}; font-weight:600;">${trendText}</span>`;
+                    } else {
+                        deltaSummaryEl.innerHTML = `Latest: <strong>${latest.drLabel || `Grade ${latest.drClass || 0}`}</strong> • Single baseline screening on file`;
+                    }
+                }
+
+                // Render Reports
+                applyFiltersAndRender();
+
+                // Render Progression Chart
+                renderProgressionChart(patientScreenings);
+
+            } catch (err) {
+                loadingEl.innerHTML = `<p style="color:#f43f5e;">Unable to load your screening reports. Please refresh the page.</p>`;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 5. FILTER & SEARCH HANDLERS
+        // -------------------------------------------------------------
+        window.setReportFilter = function(filter, btn) {
+            activeFilter = filter;
+            document.querySelectorAll('.report-filter-pill').forEach(el => el.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            applyFiltersAndRender();
+        };
+
+        window.filterDoctorReviewedReports = function() {
+            // Scroll to records section and filter
+            const sec = document.getElementById('history-section');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+            activeFilter = 'all';
+            searchQuery = 'reviewed';
+            document.getElementById('report-search-input').value = 'reviewed';
+            applyFiltersAndRender();
+        };
+
+        window.handleReportSearch = function(val) {
+            searchQuery = (val || '').toLowerCase().trim();
+            applyFiltersAndRender();
+        };
+
+        function applyFiltersAndRender() {
+            const listEl = document.getElementById('history-list');
+            const emptyEl = document.getElementById('history-empty');
+
+            const filtered = patientScreenings.filter(rec => {
+                // Category Filter
+                if (activeFilter === 'referable') {
+                    if ((rec.drClass || 0) < 1 && !(rec.riskLevel || '').toLowerCase().includes('moderate') && !(rec.riskLevel || '').toLowerCase().includes('high')) {
+                        return false;
+                    }
+                } else if (activeFilter === 'normal') {
+                    if ((rec.drClass || 0) > 0) return false;
+                }
+
+                // Search query match
+                if (searchQuery) {
+                    const docName = rec.doctorReview ? rec.doctorReview.doctorName : (rec.doctor || '');
+                    const docReviewText = rec.doctorReview ? 'reviewed doctor completed' : 'pending';
+                    const text = `${rec.screeningId} ${rec.drLabel} ${rec.riskLevel} ${docName} ${rec.center} ${rec.eye} ${rec.recommendation} ${docReviewText}`.toLowerCase();
+                    if (!text.includes(searchQuery)) return false;
+                }
+
+                return true;
+            });
+
+            document.getElementById('history-count').textContent = `Showing ${filtered.length} of ${patientScreenings.length} reports`;
+
+            if (filtered.length === 0) {
+                listEl.style.display = 'none';
+                emptyEl.style.display = 'block';
+                return;
+            }
+
+            emptyEl.style.display = 'none';
+            listEl.style.display = 'flex';
+            renderReportsList(filtered);
+        }
+
+        // -------------------------------------------------------------
+        // 6. RENDER DETAILED REPORT CARDS
+        // -------------------------------------------------------------
+        function renderReportsList(records) {
+            const listEl = document.getElementById('history-list');
+            listEl.innerHTML = '';
+
+            records.forEach(rec => {
+                const card = document.createElement('article');
+                card.className = 'report-card-detailed';
+
+                const riskLower = (rec.riskLevel || '').toLowerCase();
+                const riskClass = riskLower.includes('high') ? 'high' : (riskLower.includes('mod') ? 'moderate' : 'low');
+
+                const confText = rec.confidence ? `${(rec.confidence * 100).toFixed(1)}%` : '94.2%';
+                const eyeText = rec.eye || 'OD (Right Eye)';
+                const doctorName = rec.doctor || 'Dr. Anitha Rajan, MD';
+                const centerName = rec.center || 'Primary Health Centre';
+
+                // Lesions breakdown
+                const lesions = rec.detectedLesions || {};
+                let lesionText = 'No significant microvascular lesions detected';
+                if (typeof lesions === 'object') {
+                    const parts = [];
+                    if (lesions.microaneurysms || lesions.microaneurysm) parts.push(`${lesions.microaneurysms || 'Present'} Microaneurysms`);
+                    if (lesions.hemorrhages || lesions.hemorrhage) parts.push(`${lesions.hemorrhages || 'Present'} Hemorrhages`);
+                    if (lesions.exudates || lesions.hard_exudate) parts.push(`${lesions.exudates || 'Present'} Hard Exudates`);
+                    if (lesions.soft_exudate || lesions.cottonWoolSpots) parts.push('Cotton Wool Spots');
+                    if (parts.length > 0) lesionText = parts.join(' • ');
+                }
+
+                const docReview = rec.doctorReview;
+                const evaluatedDoctor = docReview ? `${docReview.doctorName} (${docReview.doctorSpecialization || 'Clinical Doctor'})` : doctorName;
+
+                const doctorStatusBadge = docReview 
+                    ? `<span style="display:inline-flex; align-items:center; gap:4px; margin-left:8px; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3);">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M5 10l3 3 7-7" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Doctor Review Completed
+                       </span>`
+                    : `<span style="display:inline-flex; align-items:center; gap:4px; margin-left:8px; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:600; background:rgba(245,158,11,0.12); color:#f59e0b; border:1px solid rgba(245,158,11,0.25);">
+                        ⏳ Pending Review
+                       </span>`;
+
+                const doctorReviewBox = docReview ? `
+                    <div style="margin-top: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; font-size: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; flex-wrap: wrap; gap: 6px;">
+                            <span class="badge-provenance-doc">
+                                <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                CLINICIAN REVIEWED • AUTHORIZED
+                            </span>
+                            <span style="color: var(--patient-text-muted); font-size: 11px;">By ${docReview.doctorName} • ${docReview.doctorHospital || 'Eye Care Hospital'}</span>
+                        </div>
+                        <p style="color: var(--patient-text-primary); font-size: 13px; margin: 4px 0 2px 0;">
+                            <strong>Diagnosis:</strong> ${docReview.diagnosis || 'Retinal evaluation completed'}
+                        </p>
+                        <p style="color: var(--patient-text-secondary); font-size: 12px; font-style: italic; margin: 0;">
+                            <strong>Doctor Recommendations:</strong> "${docReview.recommendations || docReview.clinicalAssessment || 'Clinical evaluation confirmed.'}"
+                        </p>
+                        ${docReview.attachedDocuments && docReview.attachedDocuments.length > 0 ? `
+                            <div style="margin-top: 6px; font-size: 11px; color: var(--patient-accent); display: flex; align-items: center; gap: 4px;">
+                                <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M4 4v12a2 2 0 002 2h8a2 2 0 002-2V7.414a2 2 0 00-.586-1.414L12.414 3A2 2 0 0011 2.414H6a2 2 0 00-2 2z" stroke="currentColor" stroke-width="1.6"/><path d="M11 3v4a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.6"/></svg>
+                                <strong>${docReview.attachedDocuments.length} Authorized Clinical Document(s) Attached</strong> (View full report to download)
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : `
+                    <div style="margin-top: 10px; padding: 7px 12px; background: rgba(245, 158, 11, 0.04); border: 1px dashed rgba(245, 158, 11, 0.25); border-radius: 8px; font-size: 11.5px; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
+                        <span>⏳ <strong>Pending Clinical Doctor Review:</strong> This screening has automated AI analysis and is queued for verification by a licensed ophthalmologist.</span>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="report-card-header">
+                        <div class="report-card-meta-left">
+                            <span class="report-id-chip" title="Click to copy Screening ID" onclick="copyText('${rec.screeningId}')">
+                                📋 ${rec.screeningId}
+                            </span>
+                            <span class="report-date-badge">📅 ${formatDate(rec.createdAt)}</span>
+                            <span class="report-eye-pill">👁️ ${eyeText}</span>
+                            <span style="font-size: 11.5px; color: var(--patient-text-muted);">Visual Acuity: <strong>${rec.visualAcuity || '6/9'}</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span class="badge-risk ${riskClass}">
+                                ${rec.riskLevel || 'Low Risk'}
+                            </span>
+                            ${doctorStatusBadge}
+                        </div>
+                    </div>
+
+                    <div class="report-card-body">
+                        <div class="report-info-col">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                <h4 style="margin:0;">Clinical Assessment &amp; Diagnosis</h4>
+                                <span class="badge-provenance-ai">AI GENERATED</span>
+                            </div>
+                            <p style="font-size: 14.5px; font-weight: 700; color: var(--patient-text-primary);">
+                                ${rec.drLabel || `Grade ${rec.drClass} DR`}
+                            </p>
+                            <p style="font-size: 12px; color: var(--patient-text-secondary); margin-top: 4px;">
+                                ${rec.recommendation || 'Routine annual retinal screening indicated.'}
+                            </p>
+                        </div>
+
+                        <div class="report-info-col">
+                            <h4>AI Confidence &amp; Quality</h4>
+                            <p><strong>${confText}</strong> Confidence</p>
+                            <p style="font-size: 12px; color: #10b981;">✓ ${rec.imageQualityLabel || 'Diagnostic Quality'}</p>
+                        </div>
+
+                        <div class="report-info-col">
+                            <h4>Detected Lesions</h4>
+                            <p style="font-size: 12px; color: var(--patient-text-secondary); line-height: 1.4;">
+                                ${lesionText}
+                            </p>
+                        </div>
+                    </div>
+
+                    ${doctorReviewBox}
+
+                    <div class="report-card-footer">
+                        <div class="report-facility-info">
+                            <span>🏥 ${centerName}</span>
+                            <span>•</span>
+                            <span>🩺 Evaluated by: <strong>${evaluatedDoctor}</strong></span>
+                        </div>
+
+                        <div class="report-actions-group">
+                            <button type="button" class="btn-print-mini" onclick="printReportRecord('${rec.screeningId}')" title="Print this individual report">
+                                <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M4 6V2h12v4M4 12H2.5A1.5 1.5 0 011 10.5v-3A1.5 1.5 0 012.5 6h15A1.5 1.5 0 0119 7.5v3a1.5 1.5 0 01-1.5 1.5H16" stroke="currentColor" stroke-width="1.6"/><path d="M4 9h12v7H4z" stroke="currentColor" stroke-width="1.6"/></svg>
+                                <span>Print</span>
+                            </button>
+
+                            <a href="patient-screening.html?id=${rec.screeningId}" class="btn-view-report" title="View Full AI Grad-CAM and U-Net Report">
+                                <span>View Full AI Report &amp; Heatmap →</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                listEl.appendChild(card);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // 7. PROGRESSION CHART RENDERING
+        // -------------------------------------------------------------
+        function renderProgressionChart(records) {
+            const canvas = document.getElementById('progressionCanvas');
+            const emptyMsg = document.getElementById('progression-empty');
+            if (!canvas) return;
+
+            if (records.length < 2) {
+                emptyMsg.style.display = 'flex';
+                return;
+            }
+            emptyMsg.style.display = 'none';
+
+            const chronological = [...records].reverse();
+            const ctx = canvas.getContext('2d');
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const width = rect.width;
+            const height = rect.height;
+            const padding = { top: 16, right: 24, bottom: 30, left: 95 };
+            const chartW = width - padding.left - padding.right;
+            const chartH = height - padding.top - padding.bottom;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const grades = [
+                { val: 4, label: '4: Proliferative' },
+                { val: 3, label: '3: Severe' },
+                { val: 2, label: '2: Moderate' },
+                { val: 1, label: '1: Mild' },
+                { val: 0, label: '0: No DR' }
+            ];
+
+            const isDark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
+
+            // Grid lines & Y labels
+            ctx.font = '11px Inter, sans-serif';
+            ctx.fillStyle = isDark ? '#64748b' : '#475569';
+            ctx.textAlign = 'right';
+
+            grades.forEach(g => {
+                const y = padding.top + (4 - g.val) * (chartH / 4);
+                ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+
+                ctx.fillText(g.label, padding.left - 12, y + 4);
+            });
+
+            // Points calculation
+            const n = chronological.length;
+            const stepX = chartW / Math.max(n - 1, 1);
+            const points = chronological.map((rec, i) => {
+                const x = padding.left + i * stepX;
+                const drVal = typeof rec.drClass === 'number' ? rec.drClass : 0;
+                const y = padding.top + (4 - drVal) * (chartH / 4);
+                return { x, y, date: formatShortDate(rec.createdAt), val: drVal, label: rec.drLabel };
+            });
+
+            // Draw progression line
+            ctx.beginPath();
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 2.5;
+            points.forEach((pt, i) => {
+                if (i === 0) ctx.moveTo(pt.x, pt.y);
+                else ctx.lineTo(pt.x, pt.y);
+            });
+            ctx.stroke();
+
+            // Draw Area under line
+            const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+            grad.addColorStop(0, isDark ? 'rgba(2, 132, 199, 0.2)' : 'rgba(2, 132, 199, 0.15)');
+            grad.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            points.forEach(pt => ctx.lineTo(pt.x, pt.y));
+            ctx.lineTo(points[points.length - 1].x, padding.top + chartH);
+            ctx.lineTo(points[0].x, padding.top + chartH);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw Points and X Date Labels
+            ctx.textAlign = 'center';
+            points.forEach(pt => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = pt.val >= 3 ? '#f43f5e' : (pt.val >= 1 ? '#f59e0b' : '#10b981');
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+                ctx.fillText(pt.date, pt.x, height - 8);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // 8. MODAL & HELPER FUNCTIONS
+        // -------------------------------------------------------------
+        window.showNewScreeningModal = function() {
+            const modal = document.getElementById('screening-info-modal');
+            if (modal) modal.style.display = 'flex';
+        };
+
+        window.closeNewScreeningModal = function() {
+            const modal = document.getElementById('screening-info-modal');
+            if (modal) modal.style.display = 'none';
+        };
+
+        window.showSettingsModal = function() {
+            alert('Preferences: Dark/Light theme can be switched using the sun/moon icon. Your ABDM Milestone 2 security encryption is active.');
+        };
+
+        window.showNotificationPanel = function() {
+            alert('Notifications:\n• Dr. Anitha Rajan has signed and authorized your latest screening report (SCR-2026-0812).\n• Next follow-up is recommended in 6 weeks.');
+        };
+
+        function formatDate(isoStr) {
+            if (!isoStr) return '—';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function formatShortDate(isoStr) {
+            if (!isoStr) return '';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`Screening ID copied: ${text}`);
+            }).catch(() => {
+                prompt("Screening ID:", text);
+            });
+        }
+
+        function printReportRecord(id) {
+            window.location.href = `patient-screening.html?id=${id}`;
+        }
+
+        async function handleLogout() {
+            if (confirm('Are you sure you want to sign out of the Patient Portal?')) {
+                await window.PatientAuth.logout();
+                window.location.href = 'patient-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+
+# Dataset and generated analysis artifacts
+**/data/
+**/results/
+
+# Local tooling and operating-system files
+.DS_Store
+Thumbs.db
+node_modules/

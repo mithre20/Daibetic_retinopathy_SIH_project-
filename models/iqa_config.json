@@ -1,0 +1,32 @@
+{
+  "model": "MobileNetV3-Small",
+  "architecture": "torchvision.models.mobilenet_v3_small",
+  "num_classes": 3,
+  "input_size": [224, 224],
+  "good_quality_threshold": 0.75,
+  "classes": [
+    "Good Quality",
+    "Poor Quality",
+    "Unusable"
+  ],
+  "class_mapping": {
+    "0": "Good Quality",
+    "1": "Poor Quality",
+    "2": "Unusable"
+  },
+  "class_keys": {
+    "0": "good",
+    "1": "poor",
+    "2": "unusable"
+  },
+  "normalization": {
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "checkpoint_path": "models/retinal_quality_mobilenet.pth",
+  "safety_policy": {
+    "rejection_action": "BLOCK_DR_PREDICTION",
+    "recapture_required": true,
+    "min_good_confidence": 0.75
+  }
+}

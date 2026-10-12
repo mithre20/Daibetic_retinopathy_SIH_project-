@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Explainable AI for Diabetic Retinopathy Screening. AI That Sees. AI That Explains.">
+    <title>XAIRIS — 5-Stage Explainable AI Pipeline</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background animated particles -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Top Navigation -->
+    <nav id="main-nav">
+        <div class="nav-brand">
+            <div class="brand-icon">
+                <img src="xairis_emblem.png" alt="XAIRIS Logo" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));">
+            </div>
+            <span class="brand-text">XAIRIS Pipeline</span>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="pipeline" id="tab-pipeline">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14.5A6.5 6.5 0 1116.5 10 6.508 6.508 0 0110 16.5z"/><circle cx="10" cy="10" r="3"/></svg>
+                Pipeline
+            </button>
+            <button class="nav-tab" data-tab="capacity" id="tab-capacity">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M3 3v14h14V3H3zm12 12H5V5h10v10zM7 13h2V9H7v4zm4 0h2V7h-2v6z"/></svg>
+                Capacity Planning
+            </button>
+            <button class="nav-tab" data-tab="docs" id="tab-docs">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M4 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H4zm1 2h10v2H5V5zm0 4h10v2H5V9zm0 4h7v2H5v-2z"/></svg>
+                Documentation
+            </button>
+            <button class="nav-tab" data-tab="about" id="tab-about">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 12H9v-2h2v2zm0-4H9V6h2v4z"/></svg>
+                About
+            </button>
+            <div style="display:flex; align-items:center; gap:8px; margin-left:14px;">
+                <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('login'); else window.location.href='login.html';" style="background: rgba(0, 136, 185, 0.15); border: 1px solid rgba(0, 136, 185, 0.4); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Staff Login / Switch User">
+                    🩺 Staff Login
+                </button>
+                <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('dashboard'); else window.location.href='index.html#dashboard';" style="background: rgba(6, 214, 160, 0.15); border: 1px solid rgba(6, 214, 160, 0.35); color: #06d6a0; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    📊 Dashboard
+                </button>
+                <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('medivision'); else window.location.href='medivision.html';" style="background: rgba(13, 148, 136, 0.18); border: 1px solid rgba(13, 148, 136, 0.4); color: #2dd4bf; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    🔬 MediVision
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== PIPELINE TAB ==================== -->
+    <main id="panel-pipeline" class="panel active">
+        <section class="hero-section">
+            <h1>XAIRIS — Explainable AI Retinopathy Screening</h1>
+            <p class="hero-subtitle">Upload a fundus image to run the full 5-stage screening pipeline — quality assessment, lesion detection, ICDR severity grading, Grad-CAM explainability, and clinical report generation. AI That Sees. AI That Explains.</p>
+        </section>
+
+        <!-- Upload Area -->
+        <section class="upload-section glass-card">
+            <div class="upload-dropzone" id="upload-dropzone">
+                <div class="upload-icon-wrap">
+                    <svg viewBox="0 0 64 64" fill="none" width="64" height="64">
+                        <rect x="8" y="20" width="48" height="36" rx="6" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="32" cy="38" r="10" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="32" cy="38" r="4" fill="currentColor" opacity="0.3"/>
+                        <path d="M22 20V14a6 6 0 016-6h8a6 6 0 016 6v6" stroke="currentColor" stroke-width="2.5"/>
+                    </svg>
+                </div>
+                <p class="upload-main-text">Drop a fundus image here or click to browse</p>
+                <p class="upload-sub-text">Supports JPEG, PNG • Best results with ≥2000×2000 px</p>
+                <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+            <div class="upload-preview-area" id="upload-preview-area" style="display:none;">
+                <div class="preview-image-wrap">
+                    <canvas id="preview-canvas"></canvas>
+                </div>
+                <div class="preview-info">
+                    <span id="preview-filename"></span>
+                    <span id="preview-dimensions"></span>
+                    <button class="btn-secondary" id="btn-change-image">Change Image</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patient Health Report Analysis (PDF/Image Upload & Manual Health Entry) -->
+        <section class="upload-section glass-card" id="health-report-input-section" style="margin-top: 1.25rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                    <span>📄 Patient Health Report Analysis (Blood Pressure & Glucose)</span>
+                </h3>
+                <span class="tag" style="background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px;">
+                    Optional Auxiliary Clinical Data
+                </span>
+            </div>
+
+            <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem;">
+                Upload a laboratory report (PDF or scanned photo) or enter readings manually to provide clinical context alongside diabetic retinopathy screening.
+            </p>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+                <!-- Column 1: Upload Medical Report Dropzone -->
+                <div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.15); border-radius:12px; padding:1.25rem; text-align:center;" id="report-dropzone-wrap">
+                    <div style="font-size:0.8rem; font-weight:600; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.5rem;">
+                        Upload Medical Report
+                    </div>
+                    <div id="report-dropzone" style="cursor:pointer; padding:1rem;">
+                        <div style="font-size:2rem; margin-bottom:0.5rem;">📑</div>
+                        <p style="color:#e2e8f0; font-size:0.9rem; margin:0 0 4px; font-weight:500;">Drag & Drop PDF or Image Report</p>
+                        <p style="color:var(--text-secondary); font-size:0.75rem; margin:0 0 10px;">Supported: PDF, JPG, JPEG, PNG</p>
+                        <button type="button" class="btn-secondary" id="btn-browse-report" style="font-size:0.8rem; padding:6px 14px;">Browse Report File</button>
+                        <input type="file" id="report-file-input" accept=".pdf,image/png,image/jpeg,image/jpg" hidden>
+                    </div>
+
+                    <div id="report-preview-status" style="display:none; margin-top:0.75rem; padding:8px 12px; background:rgba(6,214,160,0.1); border-radius:8px; border:1px solid rgba(6,214,160,0.3); text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span id="report-filename-display" style="font-size:0.8rem; font-weight:600; color:#06d6a0;">—</span>
+                            <button type="button" id="btn-clear-report" style="background:none; border:none; color:#f87171; cursor:pointer; font-size:0.75rem;">✕ Remove</button>
+                        </div>
+                        <div id="report-status-msg" style="font-size:0.75rem; color:#cbd5e1; margin-top:2px;">Report loaded. Ready for extraction.</div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Manual Health Entry Option -->
+                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem;">
+                    <div style="font-size:0.8rem; font-weight:600; color:#f59e0b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">
+                        Or Enter Clinical Vitals Manually
+                    </div>
+
+                    <!-- Manual BP -->
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Blood Pressure (mmHg)</label>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="number" id="manual-bp-systolic" placeholder="Systolic (e.g. 120)" min="60" max="260" style="flex:1; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 10px; font-size:0.825rem;">
+                            <span style="color:#64748b; font-weight:700;">/</span>
+                            <input type="number" id="manual-bp-diastolic" placeholder="Diastolic (e.g. 80)" min="40" max="160" style="flex:1; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 10px; font-size:0.825rem;">
+                        </div>
+                    </div>
+
+                    <!-- Manual Glucose -->
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Blood Glucose / Sugar</label>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <select id="manual-glucose-type" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 8px; font-size:0.8rem; min-width:110px;">
+                                <option value="fasting">Fasting</option>
+                                <option value="postprandial">Postprandial</option>
+                                <option value="random">Random</option>
+                                <option value="hba1c">HbA1c (%)</option>
+                            </select>
+                            <input type="number" step="0.1" id="manual-glucose-value" placeholder="Value (e.g. 140)" style="flex:1; min-width:100px; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 10px; font-size:0.825rem;">
+                            <select id="manual-glucose-unit" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 8px; font-size:0.8rem;">
+                                <option value="mg/dL">mg/dL</option>
+                                <option value="mmol/L">mmol/L</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button type="button" class="btn-secondary" id="btn-save-manual-vitals" style="font-size:0.8rem; padding:6px 14px;">
+                            ✓ Record Manual Vitals
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Run Button -->
+        <div class="run-section" id="run-section" style="display:none;">
+            <button class="btn-primary btn-run" id="btn-run-pipeline">
+                <span class="btn-icon">▶</span>
+                Run Full Pipeline
+            </button>
+        </div>
+
+        <!-- Pipeline Progress -->
+        <section class="pipeline-progress glass-card" id="pipeline-progress" style="display:none;">
+            <h2>Pipeline Progress</h2>
+            <div class="progress-steps">
+                <div class="progress-step" id="step-1">
+                    <div class="step-indicator"><span>1</span></div>
+                    <div class="step-content">
+                        <div class="step-title">Quality Assessment</div>
+                        <div class="step-desc">Sharpness, illumination, FOV, contrast</div>
+                    </div>
+                    <div class="step-status" id="step-1-status"></div>
+                </div>
+                <div class="progress-step" id="step-2">
+                    <div class="step-indicator"><span>2</span></div>
+                    <div class="step-content">
+                        <div class="step-title">Structure Segmentation</div>
+                        <div class="step-desc">Optic disc, vessels, microaneurysms, exudates, hemorrhages</div>
+                    </div>
+                    <div class="step-status" id="step-2-status"></div>
+                </div>
+                <div class="progress-step" id="step-3">
+                    <div class="step-indicator"><span>3</span></div>
+                    <div class="step-content">
+                        <div class="step-title">DR Severity Grading</div>
+                        <div class="step-desc">ICDR Grade 0–4 via lesion-rule fusion</div>
+                    </div>
+                    <div class="step-status" id="step-3-status"></div>
+                </div>
+                <div class="progress-step" id="step-4">
+                    <div class="step-indicator"><span>4</span></div>
+                    <div class="step-content">
+                        <div class="step-title">Explainability</div>
+                        <div class="step-desc">Lesion-density heatmap & attention overlay</div>
+                    </div>
+                    <div class="step-status" id="step-4-status"></div>
+                </div>
+                <div class="progress-step" id="step-5">
+                    <div class="step-indicator"><span>5</span></div>
+                    <div class="step-content">
+                        <div class="step-title">Clinical Report</div>
+                        <div class="step-desc">Generating printable screening report</div>
+                    </div>
+                    <div class="step-status" id="step-5-status"></div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="pipeline-bar"></div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results-section" style="display:none;">
+            <!-- Retinal Image Quality Assessment (IQA) & Gating Card -->
+            <div class="result-card glass-card" id="iqa-card" style="margin-bottom: 1.5rem; border-left: 4px solid #10b981;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>🛡️ Image Quality Assessment (IQA) — MobileNetV3 Gatekeeper</span>
+                    </h3>
+                    <span class="tag" id="iqa-status-badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-size:0.75rem; padding:4px 12px; border-radius:20px; font-weight:600;">
+                        ACCEPTED: DR SCREENING ALLOWED
+                    </span>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Quality Class</div>
+                        <div id="iqa-class-text" style="font-size:1.25rem; font-weight:700; color:#10b981; margin-top:2px;">Good Quality</div>
+                        <div id="iqa-conf-text" style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">Confidence: 94.2% (Threshold: 75.0%)</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Gating Action</div>
+                        <div id="iqa-gate-action" style="font-size:1.1rem; font-weight:600; color:#e2e8f0; margin-top:2px;">Proceed to DR Severity Grading</div>
+                        <div id="iqa-model-badge" style="font-size:0.75rem; color:#64748b; margin-top:2px;">MobileNetV3-Small (1.52M params • CPU ~12.8ms)</div>
+                    </div>
+                </div>
+
+                <!-- Recapture Warning Alert (Shown only when rejected) -->
+                <div id="iqa-recapture-alert" style="display:none; margin-bottom:1rem; padding:14px 18px; border-radius:10px; background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35);">
+                    <div style="display:flex; gap:10px; align-items:flex-start;">
+                        <span style="font-size:1.4rem; line-height:1;">⛔</span>
+                        <div>
+                            <strong style="color:#fca5a5; font-size:0.9rem;">RECAPTURE MANDATORY — DR Screening Blocked</strong>
+                            <p id="iqa-recapture-reason" style="color:#fecaca; font-size:0.825rem; margin:4px 0 8px; line-height:1.45;">
+                                This fundus photograph failed quality control. Feeding low-quality, blurry, or overexposed images to the DR classifier risks severe false negatives (missing blinding retinopathy).
+                            </p>
+                            <div id="iqa-recommendations-list" style="font-size:0.8rem; color:#cbd5e1; line-height:1.4;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classical Retinal Metrics Grid -->
+                <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:12px 16px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">
+                        Objective Retinal Quality Metrics
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;" id="iqa-metrics-grid">
+                        <div class="metric-mini-chip" style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;">
+                            <span style="font-size:0.7rem; color:#94a3b8; display:block;">Sharpness (Laplacian)</span>
+                            <span id="metric-sharpness-val" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:600; color:#e2e8f0;">—</span>
+                        </div>
+                        <div class="metric-mini-chip" style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;">
+                            <span style="font-size:0.7rem; color:#94a3b8; display:block;">Uniformity</span>
+                            <span id="metric-illum-val" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:600; color:#e2e8f0;">—</span>
+                        </div>
+                        <div class="metric-mini-chip" style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;">
+                            <span style="font-size:0.7rem; color:#94a3b8; display:block;">FOV Coverage</span>
+                            <span id="metric-fov-val" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:600; color:#e2e8f0;">—</span>
+                        </div>
+                        <div class="metric-mini-chip" style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;">
+                            <span style="font-size:0.7rem; color:#94a3b8; display:block;">RMS Contrast</span>
+                            <span id="metric-contrast-val" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:600; color:#e2e8f0;">—</span>
+                        </div>
+                        <div class="metric-mini-chip" style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;">
+                            <span style="font-size:0.7rem; color:#94a3b8; display:block;">Clipping Ratio</span>
+                            <span id="metric-clipping-val" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:600; color:#e2e8f0;">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blocked Notice Card (Shown when screening is blocked by IQA) -->
+            <div class="result-card glass-card" id="screening-blocked-card" style="display:none; text-align:center; padding:2.5rem 1.5rem; border:2px dashed rgba(239,68,68,0.4); margin-bottom:1.5rem;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🔒</div>
+                <h3 style="color:#ef4444; margin-bottom:0.5rem;">DR Severity Grading & Explainability Locked</h3>
+                <p style="color:var(--text-secondary); max-width:620px; margin:0 auto 1.5rem; line-height:1.5;">
+                    The Image Quality Assessment gatekeeper blocked diabetic retinopathy classification because the captured image does not meet clinical diagnostic standards. Generating an AI diagnosis on sub-optimal fundus images is dangerous and can lead to false negative misdiagnoses.
+                </p>
+                <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:8px 16px; border-radius:8px; color:#fca5a5; font-size:0.85rem;">
+                    <span>📸 Action Required: Recapture retinal photograph with proper pupil dilation, illumination, and focus.</span>
+                </div>
+                <div style="margin-top: 1.25rem;">
+                    <button type="button" id="btn-override-iqa" onclick="overrideIqaAndScreen()" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; padding:10px 22px; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; font-size:0.875rem; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                        <span>🔓 Proceed with DR Screening Anyway (Clinical Override)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grading Card -->
+            <div class="result-grade-card glass-card" id="grade-card">
+                <div class="grade-badge" id="grade-badge">
+                    <span class="grade-number" id="grade-number">0</span>
+                </div>
+                <div class="grade-info">
+                    <h2 id="grade-label">No DR</h2>
+                    <div class="grade-tags">
+                        <span class="tag" id="referable-tag">Not Referable</span>
+                        <span class="tag" id="review-tag" style="display:none;">Needs Review</span>
+                    </div>
+                    <div class="confidence-bar-wrap">
+                        <span class="confidence-label">Confidence</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidence-fill"></div>
+                        </div>
+                        <span class="confidence-value" id="confidence-value">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EfficientNet-B0 Deep Learning Card -->
+            <div class="result-card glass-card" id="efficientnet-dl-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0;">🤖 Deep Learning Screening — EfficientNet-B0</h3>
+                    <span class="tag" id="dl-engine-badge" style="background:rgba(6,214,160,0.15); color:#06d6a0; border:1px solid rgba(6,214,160,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px;">AI Model: Active</span>
+                </div>
+                
+                <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1.25rem;">
+                    Retinal fundus feature representation via transfer learning on pretrained EfficientNet-B0 with 5-class ICDR severity classification.
+                </p>
+
+                <!-- Probability Distribution Bars -->
+                <div class="dl-prob-container" style="display:flex; flex-direction:column; gap:0.75rem;">
+                    <div class="dl-prob-row" data-grade="0">
+                        <div style="display:flex; justify-content:space-between; font-size:0.825rem; margin-bottom:4px;">
+                            <span>Grade 0 — No Diabetic Retinopathy</span>
+                            <span id="prob-val-0" style="font-weight:600; color:#22c55e;">0.0%</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:8px; overflow:hidden;">
+                            <div id="prob-bar-0" style="width:0%; height:100%; background:#22c55e; transition:width 0.6s ease; border-radius:6px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="dl-prob-row" data-grade="1">
+                        <div style="display:flex; justify-content:space-between; font-size:0.825rem; margin-bottom:4px;">
+                            <span>Grade 1 — Mild NPDR</span>
+                            <span id="prob-val-1" style="font-weight:600; color:#84cc16;">0.0%</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:8px; overflow:hidden;">
+                            <div id="prob-bar-1" style="width:0%; height:100%; background:#84cc16; transition:width 0.6s ease; border-radius:6px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="dl-prob-row" data-grade="2">
+                        <div style="display:flex; justify-content:space-between; font-size:0.825rem; margin-bottom:4px;">
+                            <span>Grade 2 — Moderate NPDR</span>
+                            <span id="prob-val-2" style="font-weight:600; color:#f59e0b;">0.0%</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:8px; overflow:hidden;">
+                            <div id="prob-bar-2" style="width:0%; height:100%; background:#f59e0b; transition:width 0.6s ease; border-radius:6px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="dl-prob-row" data-grade="3">
+                        <div style="display:flex; justify-content:space-between; font-size:0.825rem; margin-bottom:4px;">
+                            <span>Grade 3 — Severe NPDR</span>
+                            <span id="prob-val-3" style="font-weight:600; color:#f97316;">0.0%</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:8px; overflow:hidden;">
+                            <div id="prob-bar-3" style="width:0%; height:100%; background:#f97316; transition:width 0.6s ease; border-radius:6px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="dl-prob-row" data-grade="4">
+                        <div style="display:flex; justify-content:space-between; font-size:0.825rem; margin-bottom:4px;">
+                            <span>Grade 4 — Proliferative DR (PDR)</span>
+                            <span id="prob-val-4" style="font-weight:600; color:#ef4444;">0.0%</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:8px; overflow:hidden;">
+                            <div id="prob-bar-4" style="width:0%; height:100%; background:#ef4444; transition:width 0.6s ease; border-radius:6px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screening Recommendation -->
+                <div id="screening-recommendation-box" style="margin-top:1.5rem; padding:1rem; border-radius:10px; background:rgba(255,255,255,0.04); border-left:4px solid #06d6a0;">
+                    <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:4px;">
+                        <span>🩺 Clinical Screening Recommendation:</span>
+                    </div>
+                    <p id="screening-recommendation-text" style="color:var(--text-secondary); font-size:0.85rem; margin:0; line-height:1.4;">
+                        Upload a retinal fundus image to generate clinical triage recommendations.
+                    </p>
+                </div>
+
+                <!-- Mandatory Clinical Disclaimer Banner -->
+                <div class="clinical-disclaimer-banner" style="margin-top:1.25rem; padding:12px 16px; border-radius:10px; background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.25); display:flex; gap:12px; align-items:flex-start;">
+                    <span style="font-size:1.25rem; line-height:1;">⚠️</span>
+                    <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.45;">
+                        <strong style="color:#fca5a5;">AI-Assisted Screening Notice:</strong> This prediction is generated by an artificial intelligence screening model and is <strong>not</strong> a definitive medical diagnosis. All findings must be confirmed by a licensed ophthalmologist or qualified eye-care professional.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREENING RECOMMENDATION CARD (Deterministic Rule-Based Decision Layer) -->
+            <div class="result-card glass-card" id="screening-recommendation-card" style="margin-bottom:1.5rem; border-left:4px solid #06d6a0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>📋 SCREENING RECOMMENDATION</span>
+                    </h3>
+                    <span class="tag" id="referral-status-badge" style="background:rgba(6,214,160,0.15); color:#06d6a0; border:1px solid rgba(6,214,160,0.3); font-size:0.75rem; padding:4px 12px; border-radius:20px; font-weight:600;">
+                        RULE ENGINE: ACTIVE
+                    </span>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1.25rem;">
+                    Transparent, deterministic clinical triage layer interpreting validated DR classification into standardized rural outreach camp referral actions.
+                </p>
+
+                <!-- Recommendation Key Indicators Grid -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">DR Grade</div>
+                        <div id="referral-dr-grade" style="font-size:1.25rem; font-weight:700; color:#fff; margin-top:3px;">—</div>
+                        <div id="referral-confidence" style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">Confidence: —</div>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Risk Category</div>
+                        <div id="referral-risk-level" style="font-size:1.25rem; font-weight:700; color:#10b981; margin-top:3px;">—</div>
+                        <div id="referral-priority-tag" style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">Priority: —</div>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Referral Action</div>
+                        <div id="referral-action-text" style="font-size:1.05rem; font-weight:600; color:#e2e8f0; margin-top:3px;">—</div>
+                        <div id="referral-action-sub" style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Clinical recommendation</div>
+                    </div>
+                </div>
+
+                <!-- Transparent Explanation: Why this recommendation? -->
+                <div id="referral-why-box" style="padding:14px 18px; border-radius:10px; background:rgba(2, 132, 199, 0.08); border-left:4px solid #0284c7; margin-bottom:1.25rem;">
+                    <div style="font-size:0.85rem; font-weight:600; color:#38bdf8; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                        <span>💡 Why this recommendation?</span>
+                    </div>
+                    <div id="referral-why-text" style="color:#e2e8f0; font-size:0.85rem; line-height:1.5; white-space:pre-line;">
+                        Awaiting screening results.
+                    </div>
+                </div>
+
+                <!-- Clinical Screening Disclaimer -->
+                <div style="padding:10px 14px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+                    <span style="color:#f59e0b; font-weight:600;">Disclaimer:</span> AI screening results are not a medical diagnosis. Professional clinical evaluation by an ophthalmologist or optometrist is recommended.
+                </div>
+            </div>
+
+            <!-- HEALTH REPORT SUMMARY & VERIFICATION CARD -->
+            <div class="result-card glass-card" id="health-report-results-card" style="margin-bottom:1.5rem; border-left:4px solid #38bdf8;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>🩺 Patient Health Report Summary (Vitals & Labs)</span>
+                    </h3>
+                    <span class="tag" id="health-data-source-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:0.75rem; padding:4px 12px; border-radius:20px; font-weight:600;">
+                        NO REPORT LOADED
+                    </span>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1.25rem;">
+                    Clinical blood glucose, HbA1c, and blood pressure information extracted from the patient's medical laboratory report or manual entry.
+                </p>
+
+                <!-- Extracted Vitals Grid -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+                    <!-- Glucose Box -->
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Blood Glucose</div>
+                        <div id="health-glucose-val" style="font-size:1.25rem; font-weight:700; color:#fff; margin-top:3px;">—</div>
+                        <div id="health-glucose-sub" style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Ref: —</div>
+                        <div id="health-glucose-status" style="font-size:0.75rem; color:#38bdf8; margin-top:4px; font-weight:600;">Not Provided</div>
+                    </div>
+
+                    <!-- HbA1c Box -->
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">HbA1c (Glycated Hb)</div>
+                        <div id="health-hba1c-val" style="font-size:1.25rem; font-weight:700; color:#fff; margin-top:3px;">—</div>
+                        <div id="health-hba1c-sub" style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Ref: —</div>
+                        <div id="health-hba1c-status" style="font-size:0.75rem; color:#38bdf8; margin-top:4px; font-weight:600;">Not Provided</div>
+                    </div>
+
+                    <!-- Blood Pressure Box -->
+                    <div style="background:rgba(255,255,255,0.03); padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Blood Pressure</div>
+                        <div id="health-bp-val" style="font-size:1.25rem; font-weight:700; color:#fff; margin-top:3px;">—</div>
+                        <div id="health-bp-source" style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Source: —</div>
+                        <div id="health-bp-status" style="font-size:0.75rem; color:#38bdf8; margin-top:4px; font-weight:600;">Not Provided</div>
+                    </div>
+                </div>
+
+                <!-- User Verification & OCR Editing Box (Section 19) -->
+                <div id="user-verification-box" style="padding:12px 16px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span style="font-size:0.8rem; color:#cbd5e1;">
+                            <strong>Operator Verification:</strong> Review extracted laboratory values against the original report before finalizing triage.
+                        </span>
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" class="btn-secondary" id="btn-toggle-edit-vitals" style="font-size:0.75rem; padding:4px 10px;">✎ Edit Values</button>
+                            <button type="button" class="btn-secondary" id="btn-confirm-vitals" style="font-size:0.75rem; padding:4px 10px; background:rgba(16,185,129,0.2); color:#10b981; border:1px solid rgba(16,185,129,0.4);">✓ Confirm</button>
+                        </div>
+                    </div>
+
+                    <!-- Editable inputs container (hidden by default) -->
+                    <div id="edit-vitals-container" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                            <div>
+                                <label style="font-size:0.7rem; color:#94a3b8; display:block; margin-bottom:2px;">Fasting Glucose (mg/dL)</label>
+                                <input type="number" id="edit-glucose-val" style="width:100%; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:4px 8px; font-size:0.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.7rem; color:#94a3b8; display:block; margin-bottom:2px;">HbA1c (%)</label>
+                                <input type="number" step="0.1" id="edit-hba1c-val" style="width:100%; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:4px 8px; font-size:0.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.7rem; color:#94a3b8; display:block; margin-bottom:2px;">Blood Pressure (Systolic/Diastolic)</label>
+                                <div style="display:flex; gap:4px; align-items:center;">
+                                    <input type="number" id="edit-bp-sys" placeholder="Sys" style="flex:1; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:4px 8px; font-size:0.8rem;">
+                                    <span style="color:#64748b;">/</span>
+                                    <input type="number" id="edit-bp-dia" placeholder="Dia" style="flex:1; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:4px 8px; font-size:0.8rem;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+                    <span style="color:#f59e0b; font-weight:600;">Clinical Notice:</span> Laboratory values are extracted from the uploaded document or manual entry. The AI screening pipeline does <strong>not</strong> measure blood pressure or blood glucose from retinal fundus photographs.
+                </div>
+            </div>
+
+            <!-- UNIFIED PATIENT SCREENING SUMMARY CARD (Section 16 & 24) -->
+            <div class="result-card glass-card" id="combined-patient-summary-card" style="margin-bottom:1.5rem; border-left:4px solid #a855f7;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>📋 PATIENT SCREENING SUMMARY</span>
+                    </h3>
+                    <span class="tag" style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); font-size:0.75rem; padding:4px 12px; border-radius:20px; font-weight:600;">
+                        MULTI-MODAL REPORT
+                    </span>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    <!-- Retinal AI Findings -->
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; font-weight:600; color:#c084fc; text-transform:uppercase; margin-bottom:6px;">1. AI Retinal Findings</div>
+                        <div style="font-size:0.85rem; color:#e2e8f0; line-height:1.6;">
+                            <div><strong>DR Severity:</strong> <span id="summary-dr-grade">—</span></div>
+                            <div><strong>Confidence:</strong> <span id="summary-dr-conf">—</span></div>
+                            <div><strong>Lesions (U-Net):</strong> <span id="summary-dr-lesions">Microaneurysms, Hemorrhages</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Health Report Context -->
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.75rem; font-weight:600; color:#38bdf8; text-transform:uppercase; margin-bottom:6px;">2. Health Report Context</div>
+                        <div style="font-size:0.85rem; color:#e2e8f0; line-height:1.6;">
+                            <div><strong>Glucose:</strong> <span id="summary-glucose-val">Not provided</span></div>
+                            <div><strong>HbA1c:</strong> <span id="summary-hba1c-val">Not provided</span></div>
+                            <div><strong>Blood Pressure:</strong> <span id="summary-bp-val">Not provided</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referral Recommendation & Explanation -->
+                <div style="background:rgba(255,255,255,0.02); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); margin-bottom:0.75rem;">
+                    <div style="font-size:0.75rem; font-weight:600; color:#06d6a0; text-transform:uppercase; margin-bottom:4px;">3. Referral Recommendation & Explanation</div>
+                    <div id="summary-referral-text" style="font-size:0.85rem; color:#cbd5e1; line-height:1.5;">
+                        Awaiting screening completion.
+                    </div>
+                </div>
+
+                <div style="font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+                    <span style="color:#a855f7; font-weight:600;">Note:</span> Clinical parameters provide supplementary context and do not alter the deterministic retinal DR grading rules. All screening triage recommendations must be confirmed by an eye-care professional.
+                </div>
+            </div>
+
+            <!-- Explainable AI (Grad-CAM & U-Net Lesion Segmentation) Card -->
+            <div class="result-card glass-card" id="gradcam-explainability-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>🔬 Explainable AI — Grad-CAM Feature Attribution</span>
+                    </h3>
+                    <span class="tag" id="gradcam-target-layer-badge" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px;">
+                        Target Layer: backbone.features[8][0]
+                    </span>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem; line-height:1.5;">
+                    Visual interpretability for the <strong>EfficientNet-B0</strong> prediction. Highlighted regions indicate areas of the retinal fundus that contributed strongly to the model's classification score.
+                </p>
+
+                <!-- Interactive Viewer Controls -->
+                <div class="gradcam-controls-bar" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:1rem; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                    <!-- View Selector Tabs -->
+                    <div class="gradcam-view-tabs" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button type="button" class="btn-gradcam-tab active" id="tab-view-overlay" onclick="switchGradcamView('overlay')">Grad-CAM Overlay</button>
+                        <button type="button" class="btn-gradcam-tab" id="tab-view-heatmap" onclick="switchGradcamView('heatmap')">Heatmap</button>
+                        <button type="button" class="btn-gradcam-tab" id="tab-view-original" onclick="switchGradcamView('original')">Original Fundus</button>
+                        <button type="button" class="btn-gradcam-tab" id="tab-view-unet" onclick="switchGradcamView('unet')">U-Net Lesions</button>
+                        <button type="button" class="btn-gradcam-tab" id="tab-view-combined" onclick="switchGradcamView('combined')">Side-by-Side</button>
+                    </div>
+
+                    <!-- Target Class Selector -->
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label for="gradcam-target-select" style="font-size:0.8rem; color:var(--text-secondary);">Target Class:</label>
+                        <select id="gradcam-target-select" onchange="onGradcamTargetClassChange()" style="background:#1e293b; color:#e2e8f0; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:4px 8px; font-size:0.8rem; outline:none; cursor:pointer;">
+                            <option value="auto">Model Prediction (Auto)</option>
+                            <option value="0">Grade 0: No DR</option>
+                            <option value="1">Grade 1: Mild DR</option>
+                            <option value="2">Grade 2: Moderate DR</option>
+                            <option value="3">Grade 3: Severe DR</option>
+                            <option value="4">Grade 4: Proliferative DR</option>
+                        </select>
+                    </div>
+
+                    <!-- Heatmap Opacity Slider -->
+                    <div style="display:flex; align-items:center; gap:10px; min-width:200px;">
+                        <span style="font-size:0.8rem; color:var(--text-secondary); white-space:nowrap;">Heatmap Opacity:</span>
+                        <input type="range" id="gradcam-opacity-slider" min="0" max="100" value="40" oninput="updateGradcamOpacity(this.value)" style="width:100px; accent-color:#00d2ff; cursor:pointer;">
+                        <span id="gradcam-opacity-val" style="font-size:0.8rem; font-weight:600; color:#00d2ff; min-width:32px;">40%</span>
+                    </div>
+                </div>
+
+                <!-- Display Canvas / Image Viewer -->
+                <div id="gradcam-viewer-container" style="position:relative; width:100%; min-height:360px; max-height:480px; background:#050811; border-radius:12px; overflow:hidden; border:1px solid rgba(0,210,255,0.2); display:flex; justify-content:center; align-items:center;">
+                    <!-- Single View Images -->
+                    <div id="gradcam-single-view" style="position:relative; width:100%; height:100%; min-height:360px; display:flex; justify-content:center; align-items:center;">
+                        <img id="gradcam-img-base" src="" alt="Fundus Base" style="max-height:440px; max-width:100%; object-fit:contain; border-radius:8px; display:block;">
+                        <img id="gradcam-img-overlay" src="" alt="Grad-CAM Overlay Layer" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); max-height:440px; max-width:100%; object-fit:contain; opacity:0.4; transition:opacity 0.15s ease; border-radius:8px; pointer-events:none;">
+                    </div>
+
+                    <!-- Side-by-Side Dual View -->
+                    <div id="gradcam-combined-view" style="display:none; width:100%; padding:1rem; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:220px; text-align:center;">
+                            <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; font-weight:600;">ORIGINAL FUNDUS</div>
+                            <img id="gradcam-side-orig" src="" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                        </div>
+                        <div style="flex:1; min-width:220px; text-align:center;">
+                            <div style="font-size:0.75rem; color:#60a5fa; margin-bottom:4px; font-weight:600;">GRAD-CAM ATTENTION OVERLAY</div>
+                            <img id="gradcam-side-over" src="" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid rgba(0,210,255,0.3);">
+                        </div>
+                        <div style="flex:1; min-width:220px; text-align:center;">
+                            <div style="font-size:0.75rem; color:#34d399; margin-bottom:4px; font-weight:600;">U-NET LESION SEGMENTATION</div>
+                            <img id="gradcam-side-unet" src="" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid rgba(52,211,153,0.3);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explainability Summary Cards -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-top:1.25rem;">
+                    <!-- Grad-CAM Interpretation -->
+                    <div style="padding:1rem; border-radius:10px; background:rgba(0,210,255,0.04); border-left:4px solid #00d2ff;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-weight:600; font-size:0.875rem; color:#00d2ff;">Model Attention / Importance Map</span>
+                            <span id="gradcam-target-class-badge" style="font-size:0.75rem; color:#94a3b8;">Target: —</span>
+                        </div>
+                        <p id="gradcam-explanation-text" style="color:var(--text-secondary); font-size:0.825rem; margin:0; line-height:1.45;">
+                            Highlighted regions indicate areas that contributed strongly to the model's classification prediction.
+                        </p>
+                        <div id="gradcam-sanity-stats" style="margin-top:8px; font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#64748b;">
+                            Heatmap Min: — | Max: — | Mean: —
+                        </div>
+                    </div>
+
+                    <!-- U-Net Findings (Complementary) -->
+                    <div style="padding:1rem; border-radius:10px; background:rgba(52,211,153,0.04); border-left:4px solid #10b981;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-weight:600; font-size:0.875rem; color:#34d399;">Retinal Lesion Segmentation (U-Net)</span>
+                            <span style="font-size:0.75rem; color:#94a3b8;">Complementary</span>
+                        </div>
+                        <div id="unet-findings-list" style="display:flex; flex-wrap:wrap; gap:6px; margin:8px 0;">
+                            <span class="tag" id="unet-tag-ma" style="background:rgba(255,255,255,0.05); color:#94a3b8; font-size:0.75rem;">Microaneurysms: Checking...</span>
+                            <span class="tag" id="unet-tag-he" style="background:rgba(255,255,255,0.05); color:#94a3b8; font-size:0.75rem;">Hemorrhages: Checking...</span>
+                            <span class="tag" id="unet-tag-ex" style="background:rgba(255,255,255,0.05); color:#94a3b8; font-size:0.75rem;">Hard Exudates: Checking...</span>
+                            <span class="tag" id="unet-tag-se" style="background:rgba(255,255,255,0.05); color:#94a3b8; font-size:0.75rem;">Soft Exudates: Checking...</span>
+                        </div>
+                        <p style="color:#64748b; font-size:0.75rem; margin:0; line-height:1.35;">
+                            Note: Grad-CAM represents classifier attribution, while U-Net represents predicted lesion segmentation.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Medical Disclaimer Note -->
+                <div style="margin-top:1rem; padding:10px 14px; border-radius:8px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); display:flex; gap:10px; align-items:center;">
+                    <span style="font-size:1.1rem;">⚠️</span>
+                    <span style="font-size:0.775rem; color:#fde68a; line-height:1.4;">
+                        <strong>Interpretability Disclaimer:</strong> Grad-CAM provides an interpretability visualization of the model's prediction. Highlighted regions should not be interpreted as definitive clinical evidence or a diagnosis.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Explainable AI (SHAP Feature-Level Attribution) Card -->
+            <div class="result-card glass-card" id="shap-explainability-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>⚖️ Explainable AI — SHAP Feature Attribution</span>
+                    </h3>
+                    <span class="tag" id="shap-method-badge" style="background:rgba(244,63,94,0.15); color:#fb7185; border:1px solid rgba(244,63,94,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px;">
+                        Method: Expected Gradients (SHAP)
+                    </span>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem; line-height:1.5;">
+                    Feature-level attribution for <strong>EfficientNet-B0</strong>. SHAP decomposes evidence into 
+                    <span style="color:#f87171; font-weight:600;">Positive Contributions</span> (regions pushing toward the DR prediction) and 
+                    <span style="color:#60a5fa; font-weight:600;">Negative Contributions</span> (regions pushing away from it).
+                </p>
+
+                <!-- On-Demand Trigger Bar -->
+                <div id="shap-trigger-box" style="margin-bottom:1rem; padding:14px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <div style="font-weight:600; font-size:0.875rem; color:#f8fafc;">Feature-Level Shapley Analysis</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary);">Deep pixel-attribution requires Monte-Carlo sampling. Run on-demand to maintain instant triage speed.</div>
+                    </div>
+                    <button type="button" class="btn-primary" id="btn-run-shap" onclick="triggerShapExplanation()" style="background:linear-gradient(135deg, #f43f5e, #be123c); border:none; padding:8px 18px; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:6px;">
+                        <span id="btn-shap-spinner" style="display:none;">⏳</span>
+                        <span id="btn-shap-text">⚡ Explain Prediction with SHAP</span>
+                    </button>
+                </div>
+
+                <!-- Interactive Viewer Controls (Initially hidden until computed) -->
+                <div id="shap-content-area" style="display:none;">
+                    <div class="shap-controls-bar" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:1rem; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        <!-- View Selector Tabs -->
+                        <div class="shap-view-tabs" style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button type="button" class="btn-shap-tab active" id="tab-shap-overlay" onclick="switchShapView('overlay')">SHAP Overlay</button>
+                            <button type="button" class="btn-shap-tab" id="tab-shap-positive" onclick="switchShapView('positive')">Positive (+)</button>
+                            <button type="button" class="btn-shap-tab" id="tab-shap-negative" onclick="switchShapView('negative')">Negative (−)</button>
+                            <button type="button" class="btn-shap-tab" id="tab-shap-combined" onclick="switchShapView('combined')">Diverging Map</button>
+                            <button type="button" class="btn-shap-tab" id="tab-shap-sidebyside" onclick="switchShapView('sidebyside')">Multi-Modal</button>
+                        </div>
+
+                        <!-- Target Class Selector -->
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label for="shap-target-select" style="font-size:0.8rem; color:var(--text-secondary);">Target Class:</label>
+                            <select id="shap-target-select" onchange="onShapTargetClassChange()" style="background:#1e293b; color:#e2e8f0; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:4px 8px; font-size:0.8rem; outline:none; cursor:pointer;">
+                                <option value="auto">Model Prediction (Auto)</option>
+                                <option value="0">Grade 0: No DR</option>
+                                <option value="1">Grade 1: Mild DR</option>
+                                <option value="2">Grade 2: Moderate DR</option>
+                                <option value="3">Grade 3: Severe DR</option>
+                                <option value="4">Grade 4: Proliferative DR</option>
+                            </select>
+                        </div>
+
+                        <!-- Opacity Slider -->
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label for="shap-opacity-slider" style="font-size:0.8rem; color:var(--text-secondary);">Blend Opacity:</label>
+                            <input type="range" id="shap-opacity-slider" min="0" max="100" value="45" oninput="updateShapOpacity(this.value)" style="width:100px; accent-color:#f43f5e; cursor:pointer;">
+                            <span id="shap-opacity-val" style="font-size:0.8rem; font-weight:600; color:#fb7185; min-width:32px;">45%</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Canvas / Image Display -->
+                    <div id="shap-viewer-container" style="position:relative; width:100%; min-height:360px; max-height:480px; background:#050811; border-radius:12px; overflow:hidden; border:1px solid rgba(244,63,94,0.2); display:flex; justify-content:center; align-items:center;">
+                        <!-- Single / Overlay Display -->
+                        <div id="shap-single-view" style="position:relative; width:100%; height:100%; min-height:360px; display:flex; justify-content:center; align-items:center;">
+                            <img id="shap-img-base" src="" alt="Fundus Base" style="max-height:440px; max-width:100%; object-fit:contain; border-radius:8px; display:block;">
+                            <img id="shap-img-overlay" src="" alt="SHAP Overlay Layer" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); max-height:440px; max-width:100%; object-fit:contain; opacity:0.45; transition:opacity 0.15s ease; border-radius:8px; pointer-events:none;">
+                        </div>
+
+                        <!-- Multi-Modal Side-by-Side View -->
+                        <div id="shap-sidebyside-view" style="display:none; width:100%; padding:1rem; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;">
+                            <div style="text-align:center;">
+                                <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; font-weight:600;">Original Fundus</div>
+                                <img id="shap-side-orig" src="" style="max-height:260px; max-width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:0.75rem; color:#38bdf8; margin-bottom:4px; font-weight:600;">Grad-CAM (Attention)</div>
+                                <img id="shap-side-gradcam" src="" style="max-height:260px; max-width:100%; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:0.75rem; color:#fb7185; margin-bottom:4px; font-weight:600;">SHAP (Contribution)</div>
+                                <img id="shap-side-shap" src="" style="max-height:260px; max-width:100%; border-radius:8px; border:1px solid rgba(244,63,94,0.3);">
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:0.75rem; color:#34d399; margin-bottom:4px; font-weight:600;">U-Net (Lesions)</div>
+                                <img id="shap-side-unet" src="" style="max-height:260px; max-width:100%; border-radius:8px; border:1px solid rgba(52,211,153,0.3);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHAP Attribution Narrative & Region Summary -->
+                    <div style="margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                        <!-- Feature Breakdown Card -->
+                        <div style="padding:1rem; border-radius:10px; background:rgba(244,63,94,0.04); border-left:4px solid #f43f5e;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span style="font-weight:600; font-size:0.875rem; color:#fb7185;">Feature Attribution Breakdown</span>
+                                <span id="shap-target-badge" style="font-size:0.75rem; color:#94a3b8;">Target: —</span>
+                            </div>
+                            <div style="margin-bottom:8px;">
+                                <div style="font-size:0.75rem; font-weight:600; color:#f87171; margin-bottom:2px;">Positive Evidence (+):</div>
+                                <p id="shap-pos-narrative" style="color:var(--text-secondary); font-size:0.8rem; margin:0; line-height:1.4;">
+                                    Highlighted warm regions pushed the model toward this classification.
+                                </p>
+                            </div>
+                            <div style="margin-bottom:8px;">
+                                <div style="font-size:0.75rem; font-weight:600; color:#60a5fa; margin-bottom:2px;">Negative Evidence (−):</div>
+                                <p id="shap-neg-narrative" style="color:var(--text-secondary); font-size:0.8rem; margin:0; line-height:1.4;">
+                                    Cool regions opposed this classification or favored alternative grades.
+                                </p>
+                            </div>
+                            <div id="shap-stats-bar" style="margin-top:6px; font-family:'JetBrains Mono', monospace; font-size:0.725rem; color:#64748b;">
+                                Sparsity: — | Compute Time: —
+                            </div>
+                        </div>
+
+                        <!-- Lesion-Level Attribution Card (U-Net Fused) -->
+                        <div style="padding:1rem; border-radius:10px; background:rgba(52,211,153,0.04); border-left:4px solid #10b981;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span style="font-weight:600; font-size:0.875rem; color:#34d399;">Lesion-Aware Regional Attribution</span>
+                                <span style="font-size:0.75rem; color:#94a3b8;">U-Net Masked</span>
+                            </div>
+                            <div id="shap-lesion-list" style="display:flex; flex-direction:column; gap:4px; font-size:0.775rem;">
+                                <div id="shap-lesion-ma" style="color:#94a3b8;">• Microaneurysms: Checking...</div>
+                                <div id="shap-lesion-he" style="color:#94a3b8;">• Hemorrhages: Checking...</div>
+                                <div id="shap-lesion-ex" style="color:#94a3b8;">• Hard Exudates: Checking...</div>
+                                <div id="shap-lesion-se" style="color:#94a3b8;">• Soft Exudates: Checking...</div>
+                            </div>
+                            <div id="shap-unet-overlap-badge" style="margin-top:8px; font-size:0.725rem; color:#64748b;">
+                                SHAP/U-Net Overlap (Dice): —
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Disclaimer Note -->
+                    <div style="margin-top:1rem; padding:10px 14px; border-radius:8px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); display:flex; gap:10px; align-items:center;">
+                        <span style="font-size:1.1rem;">⚠️</span>
+                        <span style="font-size:0.775rem; color:#fde68a; line-height:1.4;">
+                            <strong>Research & Medical Safety Disclaimer:</strong> SHAP visualizations explain which image regions influenced the AI classifier's prediction. They are not a medical diagnosis and do not prove the presence or absence of a retinal lesion. Results should be reviewed by a qualified healthcare professional.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Assessment Card -->
+            <div class="result-card glass-card">
+                <h3>📋 Image Quality Assessment</h3>
+                <div class="qc-grid" id="qc-grid">
+                    <div class="qc-metric">
+                        <div class="qc-ring" id="qc-ring-overall"><span id="qc-val-overall">0</span></div>
+                        <span class="qc-label">Overall</span>
+                    </div>
+                    <div class="qc-metric">
+                        <div class="qc-ring" id="qc-ring-sharp"><span id="qc-val-sharp">0</span></div>
+                        <span class="qc-label">Sharpness</span>
+                    </div>
+                    <div class="qc-metric">
+                        <div class="qc-ring" id="qc-ring-illum"><span id="qc-val-illum">0</span></div>
+                        <span class="qc-label">Illumination</span>
+                    </div>
+                    <div class="qc-metric">
+                        <div class="qc-ring" id="qc-ring-fov"><span id="qc-val-fov">0</span></div>
+                        <span class="qc-label">FOV</span>
+                    </div>
+                    <div class="qc-metric">
+                        <div class="qc-ring" id="qc-ring-contrast"><span id="qc-val-contrast">0</span></div>
+                        <span class="qc-label">Contrast</span>
+                    </div>
+                </div>
+                <p class="qc-message" id="qc-message"></p>
+            </div>
+
+            <!-- Lesion Evidence Card -->
+            <div class="result-card glass-card">
+                <h3>🔬 Lesion Evidence Summary</h3>
+                <table class="lesion-table" id="lesion-table">
+                    <thead>
+                        <tr><th>Lesion Type</th><th>Count / Value</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody id="lesion-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Image Panels -->
+            <div class="image-panels">
+                <div class="image-panel glass-card">
+                    <h3>Original (Enhanced)</h3>
+                    <canvas id="result-original-canvas"></canvas>
+                </div>
+                <div class="image-panel glass-card">
+                    <h3>Vessel Segmentation</h3>
+                    <canvas id="result-vessel-canvas"></canvas>
+                </div>
+                <div class="image-panel glass-card">
+                    <h3>Lesion Detection Overlay</h3>
+                    <canvas id="result-lesion-canvas"></canvas>
+                </div>
+                <div class="image-panel glass-card">
+                    <h3>Attention Heatmap</h3>
+                    <canvas id="result-heatmap-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Clinical Report -->
+            <div class="report-card glass-card" id="report-card">
+                <h3>📄 Clinical Screening Report</h3>
+                <div class="report-content" id="report-content"></div>
+                <button class="btn-primary" id="btn-download-report">Download Report (PNG)</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== CAPACITY PLANNING TAB ==================== -->
+    <main id="panel-capacity" class="panel">
+        <section class="hero-section">
+            <h1>Telemedicine Capacity Planning</h1>
+            <p class="hero-subtitle">M/M/c queueing model to size upload channels, AI processing workers, and reviewing ophthalmologists for a district screening program.</p>
+        </section>
+
+        <div class="capacity-layout">
+            <div class="capacity-inputs glass-card">
+                <h3>Program Parameters</h3>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="cap-annual">Annual Patients</label>
+                        <input type="number" id="cap-annual" value="100000" min="1000" step="1000">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-days">Screening Days/Year</label>
+                        <input type="number" id="cap-days" value="300" min="50" max="365">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-hours">Hours/Day</label>
+                        <input type="number" id="cap-hours" value="8" min="1" max="24">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-imgsize">Image Size (MB)</label>
+                        <input type="number" id="cap-imgsize" value="2.5" min="0.1" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-uplink">Uplink (Mbps)</label>
+                        <input type="number" id="cap-uplink" value="4" min="0.5" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-aitime">AI Processing (sec)</label>
+                        <input type="number" id="cap-aitime" value="8" min="1" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-reviewtime">Review Time (min)</label>
+                        <input type="number" id="cap-reviewtime" value="0.5" min="0.1" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-referable">Referable Fraction</label>
+                        <input type="number" id="cap-referable" value="0.18" min="0.01" max="1" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="cap-util">Target Utilization</label>
+                        <input type="number" id="cap-util" value="0.75" min="0.3" max="0.99" step="0.05">
+                    </div>
+                </div>
+                <button class="btn-primary" id="btn-run-capacity" style="margin-top:1.5rem;">
+                    <span class="btn-icon">📊</span>
+                    Run Capacity Analysis
+                </button>
+            </div>
+
+            <div class="capacity-results" id="capacity-results" style="display:none;">
+                <!-- Stage cards -->
+                <div class="stage-cards" id="stage-cards"></div>
+                <!-- Sensitivity table -->
+                <div class="glass-card" id="sensitivity-card">
+                    <h3>Sensitivity Analysis — Required Concurrent Reviewers</h3>
+                    <table class="sensitivity-table" id="sensitivity-table"></table>
+                </div>
+                <!-- Workflow diagram -->
+                <div class="glass-card workflow-diagram-card">
+                    <h3>Screening Workflow Model</h3>
+                    <div class="workflow-diagram" id="workflow-diagram"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== DOCS TAB ==================== -->
+    <main id="panel-docs" class="panel">
+        <section class="hero-section">
+            <h1>Documentation</h1>
+            <p class="hero-subtitle">Technical reference for the DR Screening Pipeline — datasets, clinical mapping, validation plan, and Simulink workflow notes.</p>
+        </section>
+
+        <div class="docs-container">
+            <div class="docs-nav glass-card">
+                <button class="doc-tab active" data-doc="overview">Pipeline Overview</button>
+                <button class="doc-tab" data-doc="clinical">Clinical Mapping (ICDR)</button>
+                <button class="doc-tab" data-doc="datasets">Datasets</button>
+                <button class="doc-tab" data-doc="validation">Validation Plan</button>
+                <button class="doc-tab" data-doc="simulink">Simulink Notes</button>
+                <button class="doc-tab" data-doc="code">Source Code Reference</button>
+            </div>
+            <div class="docs-content glass-card" id="docs-content"></div>
+        </div>
+    </main>
+
+    <!-- ==================== ABOUT TAB ==================== -->
+    <main id="panel-about" class="panel">
+        <section class="hero-section">
+            <h1>About This Project</h1>
+            <p class="hero-subtitle">A working software prototype for automated, explainable Diabetic Retinopathy screening designed for deployment through primary health centres in rural India.</p>
+        </section>
+
+        <div class="about-grid">
+            <div class="about-card glass-card">
+                <div class="about-icon">🎯</div>
+                <h3>Purpose</h3>
+                <p>Decision-support / triage tool for a human-in-the-loop screening workflow. Every stage runs standalone and end-to-end — quality gate, lesion detection, CNN+rule grading, Grad-CAM explainability, and clinical report — all designed for &lt;30-second ophthalmologist review.</p>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-icon">🏥</div>
+                <h3>Target Deployment</h3>
+                <p>Primary health centres (PHCs) using portable, non-mydriatic fundus cameras and low-bandwidth telemedicine links. Sized for 100,000+ patients/year per district with M/M/c queueing-theory-based capacity planning.</p>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-icon">🔬</div>
+                <h3>Hybrid Architecture</h3>
+                <p>CNN (global pattern recognition) + classical lesion detectors (sub-pixel microaneurysm detection, morphological top-hat, Frangi vesselness) fused at grading time. Never relies on a single technique that could miss small lesions.</p>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-icon">📊</div>
+                <h3>Explainability</h3>
+                <p>Grad-CAM attention maps + lesion-level evidence + calibrated confidence, packaged as a one-page report reviewable in &lt;30 seconds. Clinician trust requires the AI to show <em>why</em>, not just <em>what</em>.</p>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-icon">⚠️</div>
+                <h3>Honest Limitations</h3>
+                <p>This web version runs image processing in-browser via Canvas API with simplified algorithms (no trained CNN). The MATLAB original requires toolboxes and labeled datasets for full deep-learning grading. Any real deployment needs regulatory clearance (CDSCO in India).</p>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-icon">📋</div>
+                <h3>Clinical Standard</h3>
+                <p>Output strictly follows the International Clinical DR (ICDR) severity scale, Levels 0–4. Sensitivity is prioritized over specificity — a missed referable case risks preventable blindness.</p>
+            </div>
+        </div>
+
+        <div class="design-rationale glass-card">
+            <h3>Design Rationale — Why This Architecture</h3>
+            <table class="rationale-table">
+                <thead><tr><th>Real-world Failure Mode</th><th>How This Pipeline Addresses It</th></tr></thead>
+                <tbody>
+                    <tr><td>Black-box CNN, no clinician trust</td><td>Grad-CAM + lesion-level evidence + calibrated confidence, packaged as a report reviewable in &lt;30s</td></tr>
+                    <tr><td>Breaks on poor-quality field images</td><td>Dedicated quality-gate stage rejects/enhances <em>before</em> any grading</td></tr>
+                    <tr><td>Single-technique models miss small lesions</td><td>Hybrid: CNN (global) + classical lesion detectors (local, sub-pixel) fused at grading time</td></tr>
+                    <tr><td>No resource planning for district programs</td><td>Simulink/SimEvents workflow model + analytical M/M/c queueing calculator</td></tr>
+                    <tr><td>Grading not clinically standardized</td><td>Output follows ICDR severity scale, Levels 0–4</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>XAIRIS — Explainable AI for Diabetic Retinopathy Screening in Rural India</p>
+        <p class="footer-note">AI That Sees. AI That Explains. • Multi-Stage Clinical Decision Support</p>
+    </footer>
+
+    <script>
+        (function() {
+            function syncPipelineTheme(theme) {
+                const active = theme || localStorage.getItem('xairis_theme') || 'light';
+                document.documentElement.setAttribute('data-theme', active);
+                document.body.setAttribute('data-theme', active);
+            }
+            syncPipelineTheme();
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.action === 'themeChange') {
+                    syncPipelineTheme(e.data.theme);
+                }
+            });
+        })();
+    </script>
+    <script src="firebase-config.js"></script>
+    <script src="pipeline.js"></script>
+    <script src="capacity.js"></script>
+    <script src="docs.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Clinical Doctor Screening Review & AI Explainability. Independent clinical assessment, Grad-CAM attribution, U-Net lesion segmentation, and clinical report upload.">
+    <title>Screening Review — Clinical Doctor Portal — XAIRIS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="doctor-portal.css">
+
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="doc-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="doc-navbar-top">
+        <div class="navbar-brand-wrap">
+            <a href="/doctor/dashboard" class="navbar-brand-wrap">
+                <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="navbar-brand-logo">
+                <span class="navbar-brand-title">XAIRIS <span class="badge-portal badge-doctor" style="margin-left:8px;">CLINICAL REVIEW TERMINAL</span></span>
+            </a>
+        </div>
+
+        <nav class="doc-nav-links">
+            <a href="/doctor/dashboard" class="doc-nav-btn">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="javascript:history.back()" class="doc-nav-btn" id="nav-btn-back-patient">
+                <span>← Patient Profile</span>
+            </a>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="doc-nav-btn" id="btn-theme-toggle" onclick="toggleDoctorTheme()" title="Toggle Light / Dark Theme" style="padding:6px 12px;">
+                <span id="theme-icon">🌙</span>
+            </button>
+
+            <div class="doc-user-chip">
+                <div class="doc-avatar" id="nav-doc-avatar">D</div>
+                <div class="doc-info">
+                    <span class="doc-name" id="nav-doc-name">Dr. Anitha Rajan</span>
+                    <span class="doc-role" id="nav-doc-role">Thirunallur PHC</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="doc-container">
+
+        <!-- Header / Breadcrumbs -->
+        <div class="doc-page-header">
+            <div>
+                <div class="doc-breadcrumb">
+                    <a href="/doctor/dashboard">Doctor Dashboard</a>
+                    <span>/</span>
+                    <a id="link-patient-profile" href="#">Patient Profile</a>
+                    <span>/</span>
+                    <span class="current" id="breadcrumb-screening-id">Screening Review</span>
+                </div>
+                <h1 class="doc-page-title">
+                    <span>Clinical Ophthalmic Evaluation</span>
+                    <span class="provenance-pill provenance-doctor" id="header-review-status">REVIEW PENDING</span>
+                </h1>
+                <p class="doc-page-subtitle">
+                    Independent Clinician Assessment • Explainable AI Attributions • ABDM Diagnostic Provenance
+                </p>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="button" class="btn-doc-outline" onclick="openUploadModal()">
+                    <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M4 13v3a2 2 0 002 2h8a2 2 0 002-2v-3M10 3v11M14 7l-4-4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>+ Upload Clinical Report</span>
+                </button>
+                <button type="button" class="btn-doc-primary" onclick="document.getElementById('clinical-assessment-textarea').focus()">
+                    <span>Author Assessment ↓</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TWO-COLUMN CLINICAL REVIEW WORKSPACE -->
+        <div class="doc-screening-layout">
+
+            <!-- LEFT COLUMN: AI Prediction & Multimodal Explainability (IMMUTABLE) -->
+            <div>
+
+                <!-- 1. AI Screening Result Dossier (Immutable) -->
+                <section class="doc-form-card">
+                    <div class="doc-form-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="provenance-pill provenance-ai">SOURCE: AI MODEL</span>
+                            <h3 style="font-size:16px; font-weight:700;">AI Screening Prediction (Read-Only)</h3>
+                        </div>
+                        <span style="font-size:11.5px; color:var(--doc-text-muted);">Immutable Model Output</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <span style="font-size:11px; font-weight:700; color:var(--doc-accent); text-transform:uppercase; letter-spacing:0.5px;">DIABETIC RETINOPATHY CLASSIFICATION</span>
+                            <h2 id="ai-dr-label" style="font-size:22px; font-weight:800; margin:4px 0; color:var(--doc-text-primary);">
+                                Loading prediction...
+                            </h2>
+                            <span style="font-size:12.5px; color:var(--doc-text-secondary);">
+                                Evaluated by <strong id="ai-model-used">EfficientNet-B0 (PyTorch)</strong> Deep Neural Network
+                            </span>
+                        </div>
+                        <div style="text-align:right;">
+                            <span id="ai-risk-badge" class="status-pill status-pending" style="font-size:13px; padding:6px 14px;">
+                                Moderate Risk
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Meta Grid -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; background:rgba(0,0,0,0.2); padding:14px; border-radius:8px; border:1px solid var(--doc-border);">
+                        <div>
+                            <span class="doc-form-label">Screening ID</span>
+                            <strong id="ai-screening-id" style="font-family:var(--font-mono); color:var(--doc-accent);">—</strong>
+                        </div>
+                        <div>
+                            <span class="doc-form-label">Screening Date</span>
+                            <span id="ai-screening-date" style="font-size:13px;">—</span>
+                        </div>
+                        <div>
+                            <span class="doc-form-label">Patient ID</span>
+                            <strong id="ai-patient-id" style="font-family:var(--font-mono);">—</strong>
+                        </div>
+                        <div>
+                            <span class="doc-form-label">Model Confidence</span>
+                            <strong id="ai-confidence" style="font-family:var(--font-mono); color:#34d399;">—</strong>
+                        </div>
+                        <div>
+                            <span class="doc-form-label">Image Quality (IQA)</span>
+                            <span id="ai-iqa-status" style="font-size:13px; color:#38bdf8;">Optimal (0.97)</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; padding:12px; border-radius:8px; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2);">
+                        <strong style="font-size:12px; color:var(--doc-accent); text-transform:uppercase;">AI Automated Recommendation:</strong>
+                        <p id="ai-recommendation-text" style="font-size:13px; color:var(--doc-text-secondary); margin-top:4px;">
+                            —
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 2. Multimodal Explainable AI Visualizations -->
+                <section class="doc-form-card">
+                    <div class="doc-form-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="provenance-pill provenance-ai">AI EXPLAINABILITY</span>
+                            <h3 style="font-size:16px; font-weight:700;">Multimodal Visual Attributions</h3>
+                        </div>
+                        <span style="font-size:11.5px; color:var(--doc-text-muted);">Visual Diagnostics</span>
+                    </div>
+
+                    <p style="font-size:12.5px; color:var(--doc-text-muted); margin-bottom:12px;">
+                        Transparent AI attention and lesion detection maps generated by the neural pipeline:
+                    </p>
+
+                    <div class="visuals-trio-grid">
+                        <!-- Panel 1: Original Fundus -->
+                        <div class="visual-panel-box">
+                            <div class="visual-panel-tag">
+                                <span>1. Fundus Image</span>
+                                <span style="color:#34d399;">Accepted</span>
+                            </div>
+                            <div class="visual-img-container">
+                                <img id="img-fundus" src="fundus_scan.jpg" alt="Original Fundus Scan">
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Grad-CAM Attention Heatmap -->
+                        <div class="visual-panel-box">
+                            <div class="visual-panel-tag">
+                                <span>2. Grad-CAM Heatmap</span>
+                                <span style="color:var(--doc-accent);">Attention</span>
+                            </div>
+                            <div class="visual-img-container">
+                                <img id="img-gradcam" src="fundus_scan.jpg" alt="Grad-CAM Attention Heatmap">
+                            </div>
+                        </div>
+
+                        <!-- Panel 3: U-Net Lesion Mask -->
+                        <div class="visual-panel-box">
+                            <div class="visual-panel-tag">
+                                <span>3. U-Net Lesion Mask</span>
+                                <span style="color:#fbbf24;">Segmentation</span>
+                            </div>
+                            <div class="visual-img-container">
+                                <img id="img-unet" src="fundus_scan.jpg" alt="U-Net Lesion Segmentation">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explanatory Disclaimer as per spec Section 9 -->
+                    <div style="padding:10px 14px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); font-size:12px; color:var(--doc-text-muted); margin-top:12px;">
+                        ℹ️ <strong>AI-generated explanation:</strong> Grad-CAM heatmap visualization represents convolutional feature activation and model spatial attention during inference. It is an explainability aid and is not in itself a medical diagnosis.
+                    </div>
+
+                    <!-- U-Net Detected Lesions Checklist -->
+                    <div style="margin-top:18px;">
+                        <span class="doc-form-label">U-Net Segmented Lesion Checklist:</span>
+                        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:6px;">
+                            <div id="chk-ma" style="padding:8px 12px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid var(--doc-border); font-size:12.5px; display:flex; align-items:center; gap:8px;">
+                                <span id="icon-ma">○</span>
+                                <span>Microaneurysms</span>
+                            </div>
+                            <div id="chk-he" style="padding:8px 12px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid var(--doc-border); font-size:12.5px; display:flex; align-items:center; gap:8px;">
+                                <span id="icon-he">○</span>
+                                <span>Hemorrhages</span>
+                            </div>
+                            <div id="chk-ex" style="padding:8px 12px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid var(--doc-border); font-size:12.5px; display:flex; align-items:center; gap:8px;">
+                                <span id="icon-ex">○</span>
+                                <span>Hard Exudates</span>
+                            </div>
+                            <div id="chk-se" style="padding:8px 12px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid var(--doc-border); font-size:12.5px; display:flex; align-items:center; gap:8px;">
+                                <span id="icon-se">○</span>
+                                <span>Soft Exudates (Cotton Wool)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Clinical Doctor Review & Report Authoring Form -->
+            <div>
+
+                <!-- Clinical Review Form -->
+                <section class="doc-form-card" id="form-review-section">
+                    <div class="doc-form-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="provenance-pill provenance-doctor">SOURCE: CLINICAL DOCTOR</span>
+                            <h3 style="font-size:16px; font-weight:700;">Doctor Clinical Review</h3>
+                        </div>
+                        <span id="report-version-badge" class="provenance-pill provenance-doctor">v1.0</span>
+                    </div>
+
+                    <form id="form-clinical-review" onsubmit="handleSaveClinicalReview(event)">
+                        
+                        <!-- 1. Doctor's Diagnosis -->
+                        <div class="doc-form-group">
+                            <label for="doc-diagnosis-select" class="doc-form-label">Doctor's Clinical Diagnosis *</label>
+                            <select id="doc-diagnosis-select" class="doc-form-select" required>
+                                <option value="">-- Select Clinical Diagnosis --</option>
+                                <option value="No Diabetic Retinopathy (Normal Retina)">No Diabetic Retinopathy (Normal Retina)</option>
+                                <option value="Mild Non-Proliferative Diabetic Retinopathy (Mild NPDR)">Mild Non-Proliferative Diabetic Retinopathy (Mild NPDR)</option>
+                                <option value="Moderate Non-Proliferative Diabetic Retinopathy (Moderate NPDR)">Moderate Non-Proliferative Diabetic Retinopathy (Moderate NPDR)</option>
+                                <option value="Severe Non-Proliferative Diabetic Retinopathy (Severe NPDR)">Severe Non-Proliferative Diabetic Retinopathy (Severe NPDR)</option>
+                                <option value="Proliferative Diabetic Retinopathy (PDR)">Proliferative Diabetic Retinopathy (PDR)</option>
+                                <option value="Clinically Significant Macular Edema (CSME)">Clinically Significant Macular Edema (CSME)</option>
+                                <option value="Non-DR Retinal Pathology Observed">Non-DR Retinal Pathology Observed</option>
+                                <option value="Inconclusive Fundus Scan / Repeat Required">Inconclusive Fundus Scan / Repeat Required</option>
+                            </select>
+                        </div>
+
+                        <!-- 2. Clinical Assessment (Mandatory) -->
+                        <div class="doc-form-group">
+                            <label for="clinical-assessment-textarea" class="doc-form-label">Clinical Assessment &amp; Ophthalmic Findings *</label>
+                            <textarea id="clinical-assessment-textarea" class="doc-form-textarea" rows="4" placeholder="Enter comprehensive clinical observations (e.g. microvascular changes, exudates distribution, disc margins, macular integrity)..." required></textarea>
+                        </div>
+
+                        <!-- 3. Interpretation of AI Prediction -->
+                        <div class="doc-form-group">
+                            <label for="clinical-interpretation" class="doc-form-label">Doctor's Interpretation &amp; AI Agreement Notes</label>
+                            <input type="text" id="clinical-interpretation" class="doc-form-input" placeholder="e.g. AI classification confirmed; microaneurysms match Grad-CAM hotspot distribution.">
+                        </div>
+
+                        <!-- 4. Clinical Recommendations -->
+                        <div class="doc-form-group">
+                            <label for="clinical-recommendations" class="doc-form-label">Doctor's Recommendations &amp; Care Plan *</label>
+                            <textarea id="clinical-recommendations" class="doc-form-textarea" rows="2" placeholder="e.g. Strict glycemic control; maintain HbA1c < 7.0%; dilated fundus examination in 6 weeks." required></textarea>
+                        </div>
+
+                        <!-- 5. Follow-up & Referral Options -->
+                        <div class="doc-form-row">
+                            <div class="doc-form-group">
+                                <label for="clinical-followup-req" class="doc-form-label">Follow-up Required?</label>
+                                <select id="clinical-followup-req" class="doc-form-select">
+                                    <option value="No">No</option>
+                                    <option value="Yes" selected>Yes</option>
+                                </select>
+                            </div>
+                            <div class="doc-form-group">
+                                <label for="clinical-followup-date" class="doc-form-label">Follow-up Date</label>
+                                <input type="date" id="clinical-followup-date" class="doc-form-input">
+                            </div>
+                        </div>
+
+                        <div class="doc-form-group">
+                            <label for="clinical-referral-select" class="doc-form-label">Specialist Referral Required</label>
+                            <select id="clinical-referral-select" class="doc-form-select">
+                                <option value="No">No Referral Needed</option>
+                                <option value="Comprehensive Ophthalmologist" selected>Comprehensive Ophthalmologist</option>
+                                <option value="Vitreo-Retina Specialist">Vitreo-Retina Specialist</option>
+                                <option value="Emergency / Urgent Review (Within 48h)">Emergency / Urgent Review (Within 48h)</option>
+                                <option value="Other Specialist">Other Specialist</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit Action -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                            <span id="save-status-msg" style="font-size:12px; color:var(--doc-text-muted);"></span>
+                            <button type="submit" id="btn-save-report" class="btn-doc-primary" style="padding:10px 22px;">
+                                <span>Sign &amp; Save Clinical Report</span>
+                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M5 10l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Supporting Documents & Uploads Section -->
+                <section class="doc-form-card">
+                    <div class="doc-form-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="provenance-pill provenance-doc-file">SUPPORTING DOCUMENTS</span>
+                            <h3 style="font-size:15px; font-weight:700;">Uploaded Clinical Reports</h3>
+                        </div>
+                        <button type="button" class="btn-doc-outline" onclick="openUploadModal()" style="padding:4px 10px; font-size:11.5px;">
+                            + Upload
+                        </button>
+                    </div>
+
+                    <div id="attached-docs-list">
+                        <div style="text-align:center; padding:18px; color:var(--doc-text-muted); font-size:12.5px;">
+                            No supporting PDF or imaging documents attached yet.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audit History / Version Trail Accordion -->
+                <section class="doc-form-card">
+                    <div class="doc-form-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:15px;">📜</span>
+                            <h3 style="font-size:15px; font-weight:700;">Audit Trail &amp; Version History</h3>
+                        </div>
+                        <span style="font-size:11.5px; color:var(--doc-text-muted);">Tamper-evident log</span>
+                    </div>
+
+                    <div id="version-trail-container" class="version-timeline">
+                        <div style="color:var(--doc-text-muted); font-size:12px;">
+                            Audit versions will appear here as reports are saved and updated.
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Upload Clinical Report Modal Dialog -->
+    <div class="doc-modal-overlay" id="upload-modal" onclick="if(event.target===this) closeUploadModal()">
+        <div class="doc-modal-card">
+            <div class="doc-modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:18px;">📄</span>
+                    <strong style="font-size:16px;">Upload Clinical Report Document</strong>
+                </div>
+                <button type="button" onclick="closeUploadModal()" style="background:transparent; border:none; color:var(--doc-text-muted); cursor:pointer; font-size:18px;">✕</button>
+            </div>
+
+            <form id="form-upload-document" onsubmit="handleUploadDocument(event)">
+                <div class="doc-modal-body">
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--doc-border); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:12.5px;">
+                        <div>Patient: <strong id="modal-patient-id" style="font-family:var(--font-mono); color:var(--doc-accent);">P-00000</strong></div>
+                        <div style="margin-top:2px;">Related Screening: <strong id="modal-screening-id" style="font-family:var(--font-mono);">SCR-00000</strong></div>
+                    </div>
+
+                    <div class="doc-form-group">
+                        <label for="upload-doc-title" class="doc-form-label">Report Document Title *</label>
+                        <input type="text" id="upload-doc-title" class="doc-form-input" placeholder="e.g. Detailed Ophthalmic Fundus Examination Report" required>
+                    </div>
+
+                    <div class="doc-form-group">
+                        <label for="upload-doc-desc" class="doc-form-label">Clinical Description / Notes</label>
+                        <input type="text" id="upload-doc-desc" class="doc-form-input" placeholder="e.g. Dilated slit-lamp exam and OCT notes attached">
+                    </div>
+
+                    <div class="doc-form-group">
+                        <label for="upload-file-input" class="doc-form-label">Select Document (PDF, JPG, PNG • Max 15MB) *</label>
+                        <input type="file" id="upload-file-input" class="doc-form-input" accept=".pdf,image/png,image/jpeg" required>
+                    </div>
+                </div>
+
+                <div class="doc-modal-footer">
+                    <button type="button" class="btn-doc-outline" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" id="btn-modal-upload-submit" class="btn-doc-primary">
+                        <span>Upload Report</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        let currentDoctor = null;
+        let patientUid = null;
+        let screeningId = null;
+        let activeScreeningData = null;
+        let activeDoctorReport = null;
+
+        // Theme management
+        function applyDoctorTheme() {
+            const theme = localStorage.getItem('xairis_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        window.toggleDoctorTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('xairis_theme', next);
+            applyDoctorTheme();
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            applyDoctorTheme();
+
+            if (!window.DoctorAuth || !window.DoctorAuth.isAuthenticated()) {
+                window.location.href = 'login.html?role=doctor';
+                return;
+            }
+
+            currentDoctor = window.DoctorAuth.getCurrentDoctor();
+            if (currentDoctor) {
+                document.getElementById('nav-doc-name').textContent = currentDoctor.fullName || 'Doctor';
+                document.getElementById('nav-doc-role').textContent = currentDoctor.hospitalOrClinic || 'Clinical Station';
+                document.getElementById('nav-doc-avatar').textContent = (currentDoctor.fullName || 'D').replace('Dr. ', '').charAt(0).toUpperCase();
+            }
+
+            // Extract patientUid and screeningId from URL or query parameters
+            // Paths can be: /doctor/patient/:uid/screening/:id OR doctor-screening.html?uid=...&id=...
+            const pathParts = window.location.pathname.split('/');
+            const pIdx = pathParts.indexOf('patient');
+            const sIdx = pathParts.indexOf('screening');
+            if (pIdx !== -1 && pathParts[pIdx + 1] && sIdx !== -1 && pathParts[sIdx + 1]) {
+                patientUid = pathParts[pIdx + 1];
+                screeningId = pathParts[sIdx + 1];
+            } else {
+                const params = new URLSearchParams(window.location.search);
+                patientUid = params.get('uid') || 'usr_ramesh';
+                screeningId = params.get('id') || 'SCR-2026-0812';
+            }
+
+            // Set link to patient profile
+            const profileUrl = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html')
+                ? `/doctor/patient/${patientUid}`
+                : `doctor-patient.html?uid=${patientUid}`;
+            document.getElementById('link-patient-profile').href = profileUrl;
+            document.getElementById('nav-btn-back-patient').href = profileUrl;
+
+            await loadScreeningForDoctor(screeningId);
+        });
+
+        async function loadScreeningForDoctor(id) {
+            try {
+                const res = await window.DoctorClinical.getScreeningDetails(id);
+                activeScreeningData = res.screening;
+                activeDoctorReport = res.doctorReport;
+
+                renderAIResults(res.screening, res.patient);
+                if (res.doctorReport) {
+                    populateExistingDoctorReport(res.doctorReport);
+                } else {
+                    // Pre-fill recommendation date default (+ 30 days)
+                    const followDate = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+                    document.getElementById('clinical-followup-date').value = followDate;
+                }
+
+                await loadAuditVersions(res.doctorReport ? res.doctorReport.reportId : null);
+            } catch (err) {
+                console.error('Error loading screening:', err);
+                document.getElementById('ai-dr-label').textContent = 'Screening Not Found';
+                document.getElementById('ai-recommendation-text').textContent = err.message || 'Could not load record.';
+            }
+        }
+
+        // Render Immutable AI Results
+        function renderAIResults(screening, patient) {
+            document.getElementById('breadcrumb-screening-id').textContent = screening.screeningId;
+            document.getElementById('ai-screening-id').textContent = screening.screeningId;
+            document.getElementById('ai-patient-id').textContent = patient.patientId || screening.patientId || 'P-UNKNOWN';
+            document.getElementById('ai-screening-date').textContent = screening.createdAt ? new Date(screening.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+            
+            document.getElementById('ai-dr-label').textContent = screening.drLabel || 'Diabetic Retinopathy Screen';
+            document.getElementById('ai-model-used').textContent = screening.modelUsed || 'EfficientNet-B0 (PyTorch)';
+            document.getElementById('ai-confidence').textContent = screening.confidence ? `${(screening.confidence * 100).toFixed(1)}%` : '94.2%';
+            document.getElementById('ai-recommendation-text').textContent = screening.recommendation || 'Standard follow-up protocol.';
+
+            const riskBadge = document.getElementById('ai-risk-badge');
+            riskBadge.textContent = screening.riskLevel || 'Standard Risk';
+            if ((screening.riskLevel || '').toLowerCase().includes('high')) {
+                riskBadge.style.color = '#f43f5e';
+            } else if ((screening.riskLevel || '').toLowerCase().includes('mod')) {
+                riskBadge.style.color = '#fbbf24';
+            } else {
+                riskBadge.style.color = '#34d399';
+            }
+
+            // Visuals
+            if (screening.imageUrl) document.getElementById('img-fundus').src = screening.imageUrl;
+            if (screening.gradCamUrl) document.getElementById('img-gradcam').src = screening.gradCamUrl;
+            if (screening.lesionMaskUrl) document.getElementById('img-unet').src = screening.lesionMaskUrl;
+
+            // U-Net Checklist
+            const lesions = screening.detectedLesions || {};
+            setLesionTag('ma', lesions.microaneurysm || lesions.microaneurysms);
+            setLesionTag('he', lesions.hemorrhage || lesions.hemorrhages);
+            setLesionTag('ex', lesions.hard_exudate || lesions.exudates);
+            setLesionTag('se', lesions.soft_exudate || lesions.cottonWoolSpots);
+
+            // Modal fields
+            document.getElementById('modal-patient-id').textContent = patient.patientId || screening.patientId;
+            document.getElementById('modal-screening-id').textContent = screening.screeningId;
+        }
+
+        function setLesionTag(key, isPresent) {
+            const el = document.getElementById(`chk-${key}`);
+            const icon = document.getElementById(`icon-${key}`);
+            if (isPresent) {
+                el.style.borderColor = '#fbbf24';
+                el.style.background = 'rgba(245, 158, 11, 0.12)';
+                icon.textContent = '●';
+                icon.style.color = '#fbbf24';
+            } else {
+                icon.textContent = '○';
+                icon.style.color = 'var(--doc-text-muted)';
+            }
+        }
+
+        // Populate Existing Doctor Report
+        function populateExistingDoctorReport(report) {
+            document.getElementById('header-review-status').textContent = 'REVIEW COMPLETED ✓';
+            document.getElementById('header-review-status').className = 'provenance-pill provenance-doctor';
+            document.getElementById('report-version-badge').textContent = `v${report.version || 1}.0`;
+
+            if (report.diagnosis) document.getElementById('doc-diagnosis-select').value = report.diagnosis;
+            if (report.clinicalAssessment) document.getElementById('clinical-assessment-textarea').value = report.clinicalAssessment;
+            if (report.interpretation) document.getElementById('clinical-interpretation').value = report.interpretation;
+            if (report.recommendations) document.getElementById('clinical-recommendations').value = report.recommendations;
+            if (report.followUpRequired) document.getElementById('clinical-followup-req').value = report.followUpRequired;
+            if (report.followUpDate) document.getElementById('clinical-followup-date').value = report.followUpDate;
+            if (report.referralRequired) document.getElementById('clinical-referral-select').value = report.referralRequired;
+
+            document.getElementById('btn-save-report').innerHTML = '<span>Update Clinical Report (New Version)</span> <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M5 10l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            renderAttachedDocuments(report.attachedDocuments || []);
+        }
+
+        function renderAttachedDocuments(docs) {
+            const container = document.getElementById('attached-docs-list');
+            if (!docs || docs.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--doc-text-muted); font-size:12.5px;">No supporting PDF or imaging documents attached yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = docs.map(d => `
+                <div style="background:rgba(0,0,0,0.25); border:1px solid var(--doc-border); border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">📄</span>
+                        <div>
+                            <strong style="font-size:13px; color:var(--doc-text-primary);">${d.title || d.fileName}</strong>
+                            <div style="font-size:11px; color:var(--doc-text-muted);">${d.fileName} • ${d.fileSize} • Uploaded by ${d.uploadedBy}</div>
+                        </div>
+                    </div>
+                    <a href="${d.url}" target="_blank" class="btn-doc-outline" style="padding:4px 10px; font-size:12px; text-decoration:none;">
+                        <span>View / Download</span>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // Save / Update Clinical Review Handler
+        window.handleSaveClinicalReview = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-report');
+            const statusMsg = document.getElementById('save-status-msg');
+
+            const assessment = document.getElementById('clinical-assessment-textarea').value.trim();
+            const diagnosis = document.getElementById('doc-diagnosis-select').value;
+            const interpretation = document.getElementById('clinical-interpretation').value.trim();
+            const recommendations = document.getElementById('clinical-recommendations').value.trim();
+            const followUpReq = document.getElementById('clinical-followup-req').value;
+            const followUpDate = document.getElementById('clinical-followup-date').value;
+            const referralReq = document.getElementById('clinical-referral-select').value;
+
+            btn.disabled = true;
+            statusMsg.textContent = 'Saving report and auditing version...';
+
+            try {
+                let savedReport;
+                if (activeDoctorReport) {
+                    // Update existing
+                    savedReport = await window.DoctorClinical.updateClinicalReport(activeDoctorReport.reportId, {
+                        clinicalAssessment: assessment,
+                        diagnosis: diagnosis,
+                        interpretation: interpretation,
+                        recommendations: recommendations,
+                        followUpRequired: followUpReq,
+                        followUpDate: followUpDate,
+                        referralRequired: referralReq,
+                        changeSummary: `Clinical review updated by ${currentDoctor.fullName}`
+                    });
+                } else {
+                    // Author new
+                    savedReport = await window.DoctorClinical.saveClinicalReport({
+                        patientUid: patientUid,
+                        patientId: activeScreeningData ? activeScreeningData.patientId : 'P-UNKNOWN',
+                        screeningId: screeningId,
+                        clinicalAssessment: assessment,
+                        diagnosis: diagnosis,
+                        interpretation: interpretation,
+                        recommendations: recommendations,
+                        followUpRequired: followUpReq,
+                        followUpDate: followUpDate,
+                        referralRequired: referralReq,
+                        attachedDocuments: []
+                    });
+                }
+
+                activeDoctorReport = savedReport;
+                populateExistingDoctorReport(savedReport);
+                await loadAuditVersions(savedReport.reportId);
+
+                statusMsg.textContent = 'Clinical report successfully saved and recorded ✓';
+                statusMsg.style.color = '#34d399';
+                btn.disabled = false;
+            } catch (err) {
+                console.error('Error saving clinical report:', err);
+                statusMsg.textContent = `Error: ${err.message || 'Save failed'}`;
+                statusMsg.style.color = '#f87171';
+                btn.disabled = false;
+            }
+        };
+
+        // Audit Trail Loader
+        async function loadAuditVersions(reportId) {
+            const container = document.getElementById('version-trail-container');
+            if (!reportId) {
+                container.innerHTML = `<div style="color:var(--doc-text-muted); font-size:12px;">Audit versions will be created once this review is saved.</div>`;
+                return;
+            }
+
+            try {
+                const versions = await window.DoctorClinical.getReportVersions(reportId);
+                if (!versions || versions.length === 0) {
+                    container.innerHTML = `
+                        <div class="version-item">
+                            <div class="version-dot"></div>
+                            <div class="version-meta">Initial Version • ${activeDoctorReport ? activeDoctorReport.doctorName : 'Doctor'}</div>
+                            <div class="version-body">Report initialized and authenticated.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = versions.map(v => `
+                    <div class="version-item">
+                        <div class="version-dot"></div>
+                        <div class="version-meta">
+                            <strong>Version ${v.version}.0</strong> • By ${v.editedBy} • ${new Date(v.editedAt).toLocaleString('en-GB')}
+                        </div>
+                        <div class="version-body">
+                            <div><strong>Diagnosis:</strong> ${v.diagnosis || '—'}</div>
+                            <div style="margin-top:4px;"><strong>Assessment:</strong> ${v.clinicalAssessment}</div>
+                            ${v.recommendations ? `<div style="margin-top:4px;"><strong>Recommendations:</strong> ${v.recommendations}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.warn('Error loading versions:', e);
+            }
+        }
+
+        // Modal Upload Operations
+        window.openUploadModal = function() {
+            document.getElementById('upload-modal').classList.add('show');
+        };
+
+        window.closeUploadModal = function() {
+            document.getElementById('upload-modal').classList.remove('show');
+        };
+
+        window.handleUploadDocument = async function(e) {
+            e.preventDefault();
+            const title = document.getElementById('upload-doc-title').value.trim();
+            const desc = document.getElementById('upload-doc-desc').value.trim();
+            const fileInput = document.getElementById('upload-file-input');
+            const file = fileInput.files[0];
+            const btn = document.getElementById('btn-modal-upload-submit');
+
+            if (!file) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>Uploading document...</span>';
+
+            try {
+                // Read as data URL for offline preview/download support
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const dataUrl = reader.result;
+                    const docEntry = await window.DoctorClinical.uploadClinicalDocument(
+                        patientUid,
+                        screeningId,
+                        activeDoctorReport ? activeDoctorReport.reportId : null,
+                        {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            title: title,
+                            description: desc,
+                            dataUrl: dataUrl
+                        }
+                    );
+
+                    // Update UI
+                    if (!activeDoctorReport) {
+                        renderAttachedDocuments([docEntry]);
+                    } else {
+                        if (!activeDoctorReport.attachedDocuments) activeDoctorReport.attachedDocuments = [];
+                        activeDoctorReport.attachedDocuments.push(docEntry);
+                        renderAttachedDocuments(activeDoctorReport.attachedDocuments);
+                    }
+
+                    closeUploadModal();
+                    alert('Clinical document uploaded and attached successfully ✓');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Upload Report</span>';
+                };
+                reader.readAsDataURL(file);
+            } catch (err) {
+                alert(`Upload failed: ${err.message}`);
+                btn.disabled = false;
+                btn.innerHTML = '<span>Upload Report</span>';
+            }
+        };
+    </script>
+</body>
+</html>

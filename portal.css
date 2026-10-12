@@ -1,0 +1,899 @@
+/* ============================================================
+   AI DR SCREEN — Liquid Glass 2.0 & Cinematic Transitions
+   Features:
+   - Fade, Blur, Scale, Directional Horizontal Movement
+   - Optical Clip-Path Lens & Iris Reveals
+   - Multi-Depth Parallax (Caustics & Floating Bar)
+   - Morphing Physically-Connected Spring Glider Pill
+   - Interactive 3D Perspective Rotation & Tilt
+   - Spring-Based Motion Physics (Snappy, Fluid & Elastic)
+   ============================================================ */
+
+:root, [data-theme="light"] {
+    /* Base Environment - Crisp Medical Sky & Pure White */
+    --portal-bg: #f0f7fc;
+    --portal-bg-deep: #e2eff8;
+    
+    /* Liquid Glass 2.0 Optical System (Luminous White Frosted Glass with Sky Accent) */
+    --glass-surface-base: rgba(255, 255, 255, 0.9);
+    --glass-surface-elevated: rgba(255, 255, 255, 0.98);
+    --glass-surface-trench: rgba(235, 245, 253, 0.85);
+    --glass-glider-gradient: linear-gradient(135deg, rgba(2, 132, 199, 0.2) 0%, rgba(14, 165, 233, 0.25) 100%);
+    
+    /* Specular Borders & Highlights */
+    --glass-specular-border: rgba(2, 132, 199, 0.14);
+    --glass-specular-highlight: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95);
+    --glass-specular-shadow: inset 0 -1px 2px 0 rgba(11, 37, 64, 0.04);
+    --glass-drop-shadow: 0 16px 36px -10px rgba(11, 37, 64, 0.1), 0 0 1px 1px rgba(2, 132, 199, 0.08);
+    
+    /* Vibrant Semantic Accents */
+    --accent-emerald: #0284c7;
+    --accent-teal: #0ea5e9;
+    --accent-cyan: #0284c7;
+    --accent-sapphire: #0369a1;
+    --accent-violet: #6366f1;
+    
+    /* Typography matching Reference Image */
+    --text-pure: #0b2540;
+    --text-primary: #15324e;
+    --text-dim: #2b4a66;
+    --text-muted: #507293;
+    
+    /* Sizing & Geometry */
+    --floating-bar-height: 64px;
+    --floating-radius: 22px;
+    --portal-font: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Cinematic Spring Physics Tokens */
+    --spring-snappy: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --spring-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="dark"] {
+    --portal-bg: #070d18;
+    --portal-bg-deep: #040810;
+    --glass-surface-base: rgba(18, 27, 49, 0.62);
+    --glass-surface-elevated: rgba(22, 34, 62, 0.72);
+    --glass-surface-trench: rgba(6, 11, 24, 0.6);
+    --glass-glider-gradient: linear-gradient(135deg, rgba(6, 214, 160, 0.28) 0%, rgba(17, 138, 178, 0.3) 100%);
+    --glass-specular-border: rgba(255, 255, 255, 0.14);
+    --glass-specular-highlight: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.38);
+    --glass-specular-shadow: inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+    --glass-drop-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.06);
+    --accent-emerald: #06d6a0;
+    --accent-teal: #118ab2;
+    --accent-cyan: #38bdf8;
+    --accent-sapphire: #3b82f6;
+    --accent-violet: #8b5cf6;
+    --text-pure: #ffffff;
+    --text-primary: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    background-color: var(--portal-bg);
+    color: var(--text-primary);
+    font-family: var(--portal-font);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Master Container (PAGES 02–05 / 05) */
+#portal-app {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    perspective: 1400px;
+    z-index: 10;
+    overflow: hidden;
+    transform: translate3d(100vw, 0, 0);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.5s var(--spring-fluid), opacity 0.45s ease, visibility 0.5s;
+}
+
+[data-theme="dark"] #portal-app {
+    background: linear-gradient(135deg, #0b0f19 0%, #111827 100%);
+}
+
+#portal-app.portal-active {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+#portal-app.portal-exit-right {
+    transform: translate3d(100vw, 0, 0);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#portal-app.portal-exit-left {
+    transform: translate3d(-100vw, 0, 0);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ============================================================
+   1. MULTI-PLANE PARALLAX & CAUSTICS LAYER
+   ============================================================ */
+.portal-caustic-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+    transform-style: preserve-3d;
+}
+
+.caustic-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.48;
+    mix-blend-mode: screen;
+    will-change: transform;
+    transition: transform 0.35s var(--spring-fluid);
+}
+
+.caustic-orb.orb-1 {
+    width: 520px;
+    height: 400px;
+    top: -120px;
+    left: 18%;
+    background: radial-gradient(circle, rgba(6, 214, 160, 0.45) 0%, rgba(17, 138, 178, 0.12) 70%, transparent 100%);
+    opacity: 0.2;
+}
+
+.caustic-orb.orb-2 {
+    width: 480px;
+    height: 350px;
+    top: -100px;
+    right: 15%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(139, 92, 246, 0.12) 70%, transparent 100%);
+    opacity: 0.15;
+}
+
+.caustic-orb.orb-3 {
+    width: 650px;
+    height: 280px;
+    top: 60px;
+    left: 38%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+    opacity: 0.12;
+}
+
+/* ============================================================
+   2. FLOATING MASTER BAR (Calm Technology & Stable Navigation)
+   ============================================================ */
+#portal-master-bar {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1420px, calc(100vw - 28px));
+    height: var(--floating-bar-height);
+    
+    background: var(--glass-surface-base);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    
+    border: 1px solid var(--glass-specular-border);
+    border-radius: var(--floating-radius);
+    
+    box-shadow: 
+        0 4px 24px rgba(0, 0, 0, 0.25),
+        var(--glass-specular-highlight);
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 10000;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Specular light sheen across top edge */
+#portal-master-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+/* Interactive Cursor-following specular glare */
+#portal-master-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--floating-radius);
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.1) 0%, transparent 42%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#portal-master-bar:hover::after {
+    opacity: 1;
+}
+
+/* Brand Identity with Morphing Iris */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px 10px;
+    border-radius: 14px;
+    transition: background 0.2s ease, transform 0.25s var(--spring-snappy);
+}
+
+.portal-brand:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+}
+
+.portal-brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.portal-brand-logo svg,
+.portal-brand-logo img {
+    filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.6));
+    transition: transform 0.4s var(--spring-elastic);
+}
+
+.portal-brand:hover .portal-brand-logo svg,
+.portal-brand:hover .portal-brand-logo img {
+    transform: scale(1.12) rotate(6deg);
+}
+
+.portal-brand-title {
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-brand-main {
+    font-size: 14.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: var(--text-pure);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.portal-badge-unified {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.95) 0%, rgba(17, 138, 178, 0.95) 100%);
+    color: #040810;
+    padding: 2.5px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(6, 214, 160, 0.4);
+    transition: transform 0.25s var(--spring-snappy);
+}
+
+.portal-brand:hover .portal-badge-unified {
+    transform: scale(1.05);
+}
+
+.portal-brand-sub {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.4px;
+}
+
+/* ============================================================
+   3. MORPHING PHYSICALLY-CONNECTED SPRING GLIDER PILL
+   ============================================================ */
+.portal-nav-center {
+    display: flex;
+    align-items: center;
+    background: var(--glass-surface-trench);
+    border: 1px solid var(--glass-specular-border);
+    border-radius: 14px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+    user-select: none;
+}
+
+/* Morphing Liquid Glider element (slides, squashes & stretches physically) */
+.portal-nav-glider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: calc(100% - 8px);
+    border-radius: 10px;
+    background: var(--glass-glider-gradient);
+    border: 1px solid rgba(6, 214, 160, 0.5);
+    box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
+        0 4px 18px rgba(6, 214, 160, 0.25);
+    pointer-events: none;
+    z-index: 1;
+    will-change: transform, width;
+    transition: 
+        transform 0.42s var(--spring-snappy),
+        width 0.42s var(--spring-snappy);
+}
+
+.portal-nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+    user-select: none;
+    transition: color 0.2s ease, transform 0.2s var(--spring-snappy);
+}
+
+.portal-nav-tab:hover {
+    color: var(--text-pure);
+    transform: translateY(-1px);
+}
+
+.portal-nav-tab:active {
+    transform: scale(0.96);
+}
+
+.portal-nav-tab.active {
+    color: var(--text-pure);
+}
+
+.portal-nav-tab svg {
+    flex-shrink: 0;
+    opacity: 0.75;
+    transition: transform 0.3s var(--spring-snappy), opacity 0.2s ease, color 0.2s ease;
+}
+
+.portal-nav-tab:hover svg {
+    opacity: 1;
+    transform: scale(1.12);
+}
+
+.portal-nav-tab.active svg {
+    opacity: 1;
+    color: var(--accent-emerald);
+    filter: drop-shadow(0 0 8px rgba(6, 214, 160, 0.7));
+    transform: scale(1.08);
+}
+
+.portal-tab-badge {
+    background: rgba(6, 214, 160, 0.25);
+    color: var(--accent-emerald);
+    font-size: 9.5px;
+    padding: 1.5px 6px;
+    border-radius: 999px;
+    font-weight: 800;
+    border: 1px solid rgba(6, 214, 160, 0.35);
+    transition: transform 0.2s ease;
+}
+
+.portal-nav-tab:hover .portal-tab-badge {
+    transform: scale(1.08);
+}
+
+/* ============================================================
+   3.5. SEQUENTIAL PAGE STEPPER WIDGET
+   ============================================================ */
+.portal-page-stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--glass-surface-trench);
+    border: 1px solid var(--glass-specular-border);
+    border-radius: 30px;
+    padding: 3px 6px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.portal-step-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: var(--portal-font);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s var(--spring-snappy);
+    outline: none;
+}
+
+.portal-step-btn:hover:not(:disabled) {
+    background: rgba(6, 214, 160, 0.16);
+    color: var(--accent-emerald);
+    transform: translateY(-1px);
+}
+
+.portal-step-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.portal-step-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(6, 214, 160, 0.08);
+    border: 1px solid rgba(6, 214, 160, 0.28);
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    user-select: none;
+}
+
+.portal-step-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-emerald);
+    box-shadow: 0 0 6px var(--accent-emerald);
+    animation: liquidPulse 2s infinite ease-in-out;
+}
+
+.portal-step-cur {
+    color: var(--accent-emerald);
+}
+
+.portal-step-sep, .portal-step-total {
+    color: var(--text-muted);
+}
+
+/* ============================================================
+   4. RIGHT CONTROLS: 3D ROTATION & LIQUID CHIPS
+   ============================================================ */
+.portal-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    perspective: 800px;
+}
+
+/* Theme Toggle Button */
+.portal-theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--glass-surface-trench);
+    border: 1px solid var(--glass-specular-border);
+    border-radius: 999px;
+    color: var(--text-pure);
+    font-family: var(--portal-font);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s var(--spring-snappy);
+    user-select: none;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.portal-theme-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-emerald);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+.portal-theme-btn:active {
+    transform: scale(0.96);
+}
+
+.theme-icon-sun, .theme-icon-moon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
+}
+
+:root:not([data-theme="dark"]) .theme-icon-sun,
+[data-theme="light"] .theme-icon-sun {
+    display: none;
+}
+:root:not([data-theme="dark"]) .theme-icon-moon,
+[data-theme="light"] .theme-icon-moon {
+    display: inline-flex;
+}
+
+[data-theme="dark"] .theme-icon-sun {
+    display: inline-flex;
+}
+[data-theme="dark"] .theme-icon-moon {
+    display: none;
+}
+
+/* Refractive Status Capsule */
+.portal-status-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.2px;
+    transition: transform 0.25s var(--spring-snappy), box-shadow 0.25s ease;
+}
+
+[data-theme="dark"] .portal-status-chip {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.portal-status-chip:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.portal-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    animation: liquidPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes liquidPulse {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #10b981; }
+    50% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 3px #10b981; }
+}
+
+/* User Profile with Interactive 3D Rotation Tilt */
+.portal-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 12px 5px 6px;
+    background: var(--glass-surface-trench);
+    border: 1px solid var(--glass-specular-border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.28s var(--spring-fluid);
+    position: relative;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    transform-style: preserve-3d;
+}
+
+.portal-user-profile:hover {
+    border-color: var(--accent-emerald);
+    box-shadow: 0 8px 25px rgba(6, 214, 160, 0.2);
+    transform: translateY(-2px) rotateX(4deg);
+}
+
+.portal-avatar-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--accent-emerald);
+    box-shadow: 0 0 10px rgba(6, 214, 160, 0.4);
+    transition: transform 0.3s var(--spring-elastic);
+}
+
+.portal-user-profile:hover .portal-avatar-img {
+    transform: scale(1.12);
+}
+
+.portal-user-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.portal-user-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-pure);
+    line-height: 1.2;
+}
+
+.portal-user-role {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.1;
+}
+
+/* Liquid Glass 2.0 Dropdown with 3D Rotation Unfold */
+.portal-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 230px;
+    background: var(--glass-surface-elevated);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border: 1px solid var(--glass-specular-border);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 10001;
+    transform: perspective(600px) rotateX(-14deg) translateY(-12px) scale(0.94);
+    opacity: 0;
+    transform-origin: top right;
+    transition: 
+        transform 0.32s var(--spring-snappy),
+        opacity 0.25s ease;
+}
+
+.portal-dropdown-menu.show {
+    display: flex;
+    transform: perspective(600px) rotateX(0deg) translateY(0) scale(1);
+    opacity: 1;
+}
+
+.portal-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s var(--spring-fluid);
+    width: 100%;
+}
+
+.portal-dropdown-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.09);
+    transform: translateX(4px);
+}
+
+.portal-dropdown-item.danger {
+    color: #f87171;
+}
+
+.portal-dropdown-item.danger:hover {
+    background: rgba(239, 68, 68, 0.18);
+    color: #ffffff;
+}
+
+/* ============================================================
+   5. CINEMATIC VIEW TRANSITIONS
+   Fade, Blur, Scale, Horizontal Movement, Clip-Path Reveals
+   ============================================================ */
+#portal-views-container {
+    flex: 1;
+    width: 100%;
+    height: 100vh;
+    padding-top: calc(var(--floating-bar-height) + 24px);
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+    perspective: 1200px;
+}
+
+.portal-view-panel {
+    position: absolute;
+    top: calc(var(--floating-bar-height) + 24px);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - (var(--floating-bar-height) + 24px));
+    border: none;
+    display: none;
+    background: transparent;
+    opacity: 0;
+    transform-origin: center center;
+    will-change: transform, opacity, filter, clip-path;
+    transition: 
+        transform 0.48s var(--spring-fluid),
+        opacity 0.42s ease,
+        filter 0.42s ease,
+        clip-path 0.55s var(--spring-cinematic);
+}
+
+/* Active State (Resting) */
+.portal-view-panel.active {
+    display: block;
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1) translateX(0) rotateY(0deg);
+    clip-path: circle(160% at var(--clip-origin-x, 50%) 30px);
+    z-index: 5;
+}
+
+/* Direction-Aware Exit Transitions */
+.portal-view-panel.view-exit-left {
+    display: block;
+    opacity: 0 !important;
+    filter: blur(14px) !important;
+    transform: scale(0.96) translateX(-45px) rotateY(-2.5deg) !important;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.portal-view-panel.view-exit-right {
+    display: block;
+    opacity: 0 !important;
+    filter: blur(14px) !important;
+    transform: scale(0.96) translateX(45px) rotateY(2.5deg) !important;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Direction-Aware Entrance Preparation */
+.portal-view-panel.view-enter-from-right {
+    display: block;
+    opacity: 0;
+    filter: blur(18px);
+    transform: scale(1.03) translateX(55px) rotateY(2.5deg);
+    clip-path: circle(0% at var(--clip-origin-x, 50%) 30px);
+}
+
+.portal-view-panel.view-enter-from-left {
+    display: block;
+    opacity: 0;
+    filter: blur(18px);
+    transform: scale(1.03) translateX(-55px) rotateY(-2.5deg);
+    clip-path: circle(0% at var(--clip-origin-x, 50%) 30px);
+}
+
+/* Cinematic Lens Wipe Keyframe Reveal */
+@keyframes cinematicLensWipe {
+    0% {
+        clip-path: circle(0% at var(--clip-origin-x, 50%) 30px);
+        filter: blur(16px);
+        transform: scale(1.03);
+    }
+    50% {
+        clip-path: circle(85% at var(--clip-origin-x, 50%) 30px);
+        filter: blur(4px);
+    }
+    100% {
+        clip-path: circle(160% at var(--clip-origin-x, 50%) 30px);
+        filter: blur(0px);
+        transform: scale(1);
+    }
+}
+
+/* ============================================================
+   6. CINEMATIC TOAST WITH SPRING EMERGENCE
+   ============================================================ */
+#portal-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: rgba(18, 28, 52, 0.85);
+    backdrop-filter: blur(30px) saturate(190%);
+    -webkit-backdrop-filter: blur(30px) saturate(190%);
+    border: 1px solid rgba(6, 214, 160, 0.5);
+    color: #ffffff;
+    padding: 12px 22px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.35),
+        0 0 25px rgba(6, 214, 160, 0.25);
+    z-index: 99999;
+    transform: translateY(80px) scale(0.85) rotate(2deg);
+    opacity: 0;
+    transition: all 0.42s var(--spring-snappy);
+    pointer-events: none;
+}
+
+#portal-toast.show {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ============================================================
+   7. RESPONSIVE ADAPTATIONS
+   ============================================================ */
+@media (max-width: 960px) {
+    #portal-master-bar {
+        width: calc(100vw - 16px);
+        top: 8px;
+        padding: 0 10px;
+    }
+    .portal-brand-sub, .portal-status-chip {
+        display: none;
+    }
+    .portal-nav-tab {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    #portal-views-container {
+        padding-top: calc(var(--floating-bar-height) + 14px);
+    }
+    .portal-view-panel {
+        top: calc(var(--floating-bar-height) + 14px);
+        height: calc(100vh - (var(--floating-bar-height) + 14px));
+    }
+}
+
+@media (max-width: 680px) {
+    .portal-user-role {
+        display: none;
+    }
+    .portal-nav-tab span:not(.portal-tab-badge) {
+        display: none;
+    }
+    .portal-nav-tab {
+        padding: 7px 10px;
+    }
+}

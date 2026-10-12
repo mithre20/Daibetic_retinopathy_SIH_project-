@@ -1,0 +1,31 @@
+{
+  "method": "SHAP",
+  "explainer_type": "GradientExplainer",
+  "model": "EfficientNet-B0",
+  "num_classes": 5,
+  "classes": [
+    "No Diabetic Retinopathy",
+    "Mild Diabetic Retinopathy",
+    "Moderate Diabetic Retinopathy",
+    "Severe Diabetic Retinopathy",
+    "Proliferative Diabetic Retinopathy"
+  ],
+  "class_keys": [
+    "no_dr",
+    "mild",
+    "moderate",
+    "severe",
+    "proliferative"
+  ],
+  "input_size": [224, 224],
+  "normalization": {
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "on_demand": true,
+  "default_samples": 30,
+  "batch_size": 1,
+  "baseline": "zero_reference",
+  "device": "cpu",
+  "results_dir": "results/shap"
+}

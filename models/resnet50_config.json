@@ -1,0 +1,32 @@
+{
+  "model_name": "ResNet50",
+  "architecture": "torchvision.models.resnet50",
+  "pretrained_weights": "ResNet50_Weights.DEFAULT",
+  "num_classes": 5,
+  "classes": [
+    "No Diabetic Retinopathy",
+    "Mild Diabetic Retinopathy",
+    "Moderate Diabetic Retinopathy",
+    "Severe Diabetic Retinopathy",
+    "Proliferative Diabetic Retinopathy"
+  ],
+  "class_keys": [
+    "no_dr",
+    "mild",
+    "moderate",
+    "severe",
+    "proliferative"
+  ],
+  "input_size": [224, 224],
+  "normalization": {
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "head": {
+    "dropout": 0.3,
+    "in_features": 2048,
+    "out_features": 5
+  },
+  "gradcam_target_layer": "backbone.layer4[-1].conv3",
+  "gradcam_block": "backbone.layer4"
+}

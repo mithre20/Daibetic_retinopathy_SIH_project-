@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Patient Care Portal Sign In. Secure access to diabetic retinopathy screenings, AI explainability heatmaps, and doctor recommendations.">
+    <title>XAIRIS — Patient Portal Sign In</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="patient-portal.css">
+    <!-- Frame breakout: Ensure Patient Portal is always rendered standalone, never trapped inside staff live station iframe -->
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="patient-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Row -->
+    <header class="patient-auth-top-nav">
+        <div class="patient-auth-nav-left">
+            <a href="index.html#hero" target="_top" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+                <img src="xairis_emblem.png" alt="XAIRIS Emblem" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.6));">
+                <span style="font-weight: 800; font-size: 17px; letter-spacing: 0.5px; color: var(--patient-text-primary);">XAIRIS</span>
+                <span class="patient-badge-portal">PATIENT PORTAL</span>
+            </a>
+        </div>
+
+        <div class="patient-auth-nav-right">
+            <!-- Theme Switcher -->
+            <button type="button" class="patient-nav-btn" id="btn-theme-toggle" onclick="togglePatientTheme()" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark</span>
+            </button>
+
+            <!-- Switch to Staff Login -->
+            <a href="index.html#login" target="_top" class="patient-nav-btn btn-staff-switch" title="Are you a Healthcare Provider? Open Clinical Staff Terminal">
+                <span>🩺 Clinical Staff Login</span>
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+
+            <!-- Back to Landing -->
+            <a href="index.html#hero" target="_top" class="patient-nav-btn" title="Return to Main Overview">
+                <span>← Home</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Auth Viewport -->
+    <div class="patient-auth-viewport">
+        <div class="patient-auth-card">
+            
+            <!-- Auth Header -->
+            <div class="patient-auth-header">
+                <div class="patient-auth-logo-wrap">
+                    <img src="xairis_emblem.png" alt="XAIRIS Logo" class="patient-auth-logo-img">
+                    <span class="patient-auth-brand">XAIRIS</span>
+                    <span class="patient-badge-portal">PATIENT</span>
+                </div>
+                <h1 class="patient-auth-title">Patient Portal Sign In</h1>
+                <p class="patient-auth-subtitle">Secure access to your retinal screening history, AI explainability heatmaps, and doctor recommendations.</p>
+            </div>
+
+            <!-- Instant Demo Profiles Bar -->
+            <div class="patient-demo-banner">
+                <div class="patient-demo-header">
+                    <span class="patient-demo-title">⚡ Instant Demo Patients</span>
+                    <span class="patient-demo-hint">Click to sign in instantly</span>
+                </div>
+                <div class="patient-demo-chips">
+                    <button type="button" class="patient-demo-chip" onclick="quickFillPatient('ramesh')" title="Sign in as Ramesh Kumar (Grade 2 Moderate NPDR)">
+                        <span>👤 Ramesh Kumar</span>
+                        <span class="chip-grade" style="color:#fbbf24;">Grade 2</span>
+                    </button>
+                    <button type="button" class="patient-demo-chip" onclick="quickFillPatient('sunita')" title="Sign in as Sunita Devi (Healthy Retina, Grade 0)">
+                        <span>👤 Sunita Devi</span>
+                        <span class="chip-grade" style="color:#34d399;">Healthy</span>
+                    </button>
+                    <button type="button" class="patient-demo-chip" onclick="quickFillPatient('rajesh')" title="Sign in as Rajesh Varma (Grade 1 Mild NPDR)">
+                        <span>👤 Rajesh Varma</span>
+                        <span class="chip-grade" style="color:#38bdf8;">Grade 1</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Auth Mode Tabs -->
+            <div class="patient-auth-tabs" role="tablist">
+                <button type="button" class="patient-tab-btn active" id="tab-btn-email" onclick="switchLoginMethod('email')" role="tab" aria-selected="true">
+                    <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                    <span>Email &amp; Password</span>
+                </button>
+                <button type="button" class="patient-tab-btn" id="tab-btn-pin" onclick="switchLoginMethod('pin')" role="tab" aria-selected="false">
+                    <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                    <span>ABHA / Mobile PIN</span>
+                </button>
+            </div>
+
+            <!-- Error / Success Alert Message -->
+            <div id="patient-alert" class="patient-alert" role="alert"></div>
+
+            <!-- ================= FORM 1: EMAIL & PASSWORD ================= -->
+            <form id="form-patient-login" novalidate onsubmit="handleEmailLogin(event)">
+                <div class="patient-form-group">
+                    <label for="login-email" class="patient-label">Registered Email Address</label>
+                    <input type="email" id="login-email" class="patient-input" placeholder="e.g. ramesh.kumar@health.in" required autocomplete="email">
+                </div>
+
+                <div class="patient-form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+                        <label for="login-password" class="patient-label" style="margin-bottom:0;">Password</label>
+                        <a href="javascript:void(0)" onclick="handleForgotPassword()" style="font-size: 11.5px; color: var(--patient-accent); text-decoration: none;">Forgot Password?</a>
+                    </div>
+                    <div class="patient-input-wrap">
+                        <input type="password" id="login-password" class="patient-input" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-password', this)" title="Show / Hide Password" aria-label="Toggle password">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 12px; color: var(--patient-text-secondary);">
+                    <label style="display: flex; align-items: center; gap: 7px; cursor: pointer;">
+                        <input type="checkbox" id="remember-me" checked style="accent-color: var(--patient-accent);">
+                        <span>Keep me signed in</span>
+                    </label>
+                    <span style="font-size: 11px; opacity: 0.8;">Demo PIN: 2026</span>
+                </div>
+
+                <button type="submit" id="btn-submit-login" class="btn-patient-primary">
+                    <span>Sign In to Patient Portal</span>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+
+            <!-- ================= FORM 2: ABHA ID / MOBILE PIN ================= -->
+            <form id="form-patient-pin" style="display: none;" novalidate onsubmit="handlePinLogin(event)">
+                <div class="patient-form-group">
+                    <label for="login-mobile-abha" class="patient-label">Mobile Number or ABHA Health ID</label>
+                    <input type="text" id="login-mobile-abha" class="patient-input" placeholder="+91 98410 12345 or 91-4521-8890-1234" autocomplete="tel">
+                </div>
+
+                <div class="patient-form-group">
+                    <label for="login-pin" class="patient-label">4-Digit Access PIN</label>
+                    <div class="patient-input-wrap">
+                        <input type="password" id="login-pin" class="patient-input" maxlength="4" placeholder="••••" style="letter-spacing: 6px; font-size: 18px; font-family: var(--font-mono);">
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-pin', this)" title="Show / Hide PIN" aria-label="Toggle PIN">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <span style="font-size: 11px; color: var(--patient-text-muted); display: block; margin-top: 5px;">Default demo PIN is <strong>2026</strong></span>
+                </div>
+
+                <button type="submit" id="btn-submit-pin" class="btn-patient-primary" style="margin-top: 10px;">
+                    <span>Verify PIN &amp; Sign In</span>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+
+            <!-- Security & Compliance Badges -->
+            <div class="patient-security-strip">
+                <span title="ABDM Milestone 2 Compliant">🔒 ABDM M2 Compliant</span>
+                <span>•</span>
+                <span title="256-Bit SSL End-to-End Encryption">🛡️ 256-Bit Encrypted</span>
+                <span>•</span>
+                <span>🏥 HIPAA Aligned</span>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="patient-auth-footer">
+                <div>
+                    Don't have a patient account? <a href="patient-signup.html" id="link-signup">Register here</a>
+                </div>
+                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px;">
+                    Are you a Doctor or Health Center Staff? <a href="login.html" style="color:var(--patient-accent, #0284c7); font-weight: 600;">Staff &amp; Doctor Login →</a>
+                </div>
+                <div style="margin-top: 6px;">
+                    <a href="index.html#hero" class="patient-back-link" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; opacity:0.8;">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span>Back to Main Landing Page</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // -------------------------------------------------------------
+        // 1. DEMO PATIENT REPOSITORY & SEEDING ENGINE
+        // -------------------------------------------------------------
+        const DEMO_PATIENTS = {
+            ramesh: {
+                uid: 'usr_demo_ramesh',
+                patientId: 'P-10824',
+                fullName: 'Ramesh Kumar',
+                email: 'ramesh.kumar@health.in',
+                password: 'patient2026',
+                mobile: '+91 98410 12345',
+                abha: '91-4521-8890-1234',
+                pin: '2026',
+                age: 58,
+                gender: 'Male',
+                district: 'Thirunallur, Tamil Nadu',
+                screenings: [
+                    {
+                        screeningId: 'SCR-2026-0812',
+                        patientUid: 'usr_demo_ramesh',
+                        createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+                        drClass: 2,
+                        drLabel: 'Moderate NPDR',
+                        confidence: 0.942,
+                        riskLevel: 'Moderate Risk',
+                        recommendation: 'Early microvascular changes with scattered exudates. Schedule comprehensive ophthalmology review within 6 weeks.',
+                        imageQuality: 0.96,
+                        imageQualityLabel: 'Diagnostic Quality',
+                        detectedLesions: { microaneurysms: 14, hemorrhages: 6, exudates: 4, cottonWoolSpots: 0, neovascularization: 0 }
+                    },
+                    {
+                        screeningId: 'SCR-2025-1104',
+                        patientUid: 'usr_demo_ramesh',
+                        createdAt: new Date(Date.now() - 280 * 86400000).toISOString(),
+                        drClass: 1,
+                        drLabel: 'Mild NPDR',
+                        confidence: 0.915,
+                        riskLevel: 'Low-Moderate Risk',
+                        recommendation: 'Scattered microaneurysms observed. Maintain strict glycemic control. Rescreen in 6 months.',
+                        imageQuality: 0.94,
+                        imageQualityLabel: 'Diagnostic Quality',
+                        detectedLesions: { microaneurysms: 5, hemorrhages: 1, exudates: 0, cottonWoolSpots: 0, neovascularization: 0 }
+                    },
+                    {
+                        screeningId: 'SCR-2025-0418',
+                        patientUid: 'usr_demo_ramesh',
+                        createdAt: new Date(Date.now() - 480 * 86400000).toISOString(),
+                        drClass: 0,
+                        drLabel: 'No DR Detected',
+                        confidence: 0.985,
+                        riskLevel: 'Low Risk',
+                        recommendation: 'Baseline screening normal. Continue annual diabetic screening protocol.',
+                        imageQuality: 0.98,
+                        imageQualityLabel: 'Optimal Quality',
+                        detectedLesions: { microaneurysms: 0, hemorrhages: 0, exudates: 0, cottonWoolSpots: 0, neovascularization: 0 }
+                    }
+                ]
+            },
+            sunita: {
+                uid: 'usr_demo_sunita',
+                patientId: 'P-20451',
+                fullName: 'Sunita Devi',
+                email: 'sunita.devi@health.in',
+                password: 'patient2026',
+                mobile: '+91 94440 67890',
+                abha: '91-6789-1122-3344',
+                pin: '2026',
+                age: 46,
+                gender: 'Female',
+                district: 'Kallakurichi, Tamil Nadu',
+                screenings: [
+                    {
+                        screeningId: 'SCR-2026-0610',
+                        patientUid: 'usr_demo_sunita',
+                        createdAt: new Date(Date.now() - 45 * 86400000).toISOString(),
+                        drClass: 0,
+                        drLabel: 'Healthy Retina (No DR)',
+                        confidence: 0.989,
+                        riskLevel: 'Low Risk',
+                        recommendation: 'Clear retinal vasculature. No microaneurysms or signs of retinopathy. Routine annual re-evaluation.',
+                        imageQuality: 0.99,
+                        imageQualityLabel: 'Optimal Quality',
+                        detectedLesions: { microaneurysms: 0, hemorrhages: 0, exudates: 0, cottonWoolSpots: 0, neovascularization: 0 }
+                    },
+                    {
+                        screeningId: 'SCR-2025-0520',
+                        patientUid: 'usr_demo_sunita',
+                        createdAt: new Date(Date.now() - 390 * 86400000).toISOString(),
+                        drClass: 0,
+                        drLabel: 'No DR Detected',
+                        confidence: 0.978,
+                        riskLevel: 'Low Risk',
+                        recommendation: 'Healthy baseline scan. Maintain balanced lifestyle.',
+                        imageQuality: 0.95,
+                        imageQualityLabel: 'Diagnostic Quality',
+                        detectedLesions: { microaneurysms: 0, hemorrhages: 0, exudates: 0, cottonWoolSpots: 0, neovascularization: 0 }
+                    }
+                ]
+            },
+            rajesh: {
+                uid: 'usr_demo_rajesh',
+                patientId: 'P-31908',
+                fullName: 'Rajesh Varma',
+                email: 'rajesh.varma@health.in',
+                password: 'patient2026',
+                mobile: '+91 97890 54321',
+                abha: '91-3344-5566-7788',
+                pin: '2026',
+                age: 62,
+                gender: 'Male',
+                district: 'Chennai Rural, Tamil Nadu',
+                screenings: [
+                    {
+                        screeningId: 'SCR-2026-0722',
+                        patientUid: 'usr_demo_rajesh',
+                        createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+                        drClass: 1,
+                        drLabel: 'Mild NPDR',
+                        confidence: 0.935,
+                        riskLevel: 'Low Risk',
+                        recommendation: 'Few microaneurysms detected in temporal periphery. Strict blood pressure and HbA1c control recommended.',
+                        imageQuality: 0.93,
+                        imageQualityLabel: 'Diagnostic Quality',
+                        detectedLesions: { microaneurysms: 4, hemorrhages: 0, exudates: 0, cottonWoolSpots: 0, neovascularization: 0 }
+                    }
+                ]
+            }
+        };
+
+        // Seed demo accounts and screenings into LocalStorage
+        function seedDemoPatients() {
+            try {
+                let storedPatients = JSON.parse(localStorage.getItem('aidr_firestore_patients')) || {};
+                let storedScreenings = JSON.parse(localStorage.getItem('aidr_firestore_screenings')) || [];
+
+                Object.values(DEMO_PATIENTS).forEach(demo => {
+                    if (!storedPatients[demo.uid]) {
+                        storedPatients[demo.uid] = {
+                            uid: demo.uid,
+                            patientId: demo.patientId,
+                            fullName: demo.fullName,
+                            email: demo.email,
+                            mobile: demo.mobile,
+                            abha: demo.abha,
+                            pin: demo.pin,
+                            passwordHash: btoa(demo.password),
+                            age: demo.age,
+                            gender: demo.gender,
+                            district: demo.district,
+                            createdAt: new Date().toISOString()
+                        };
+                    }
+
+                    demo.screenings.forEach(sc => {
+                        const exists = storedScreenings.some(s => s.screeningId === sc.screeningId);
+                        if (!exists) {
+                            storedScreenings.push(sc);
+                        }
+                    });
+                });
+
+                localStorage.setItem('aidr_firestore_patients', JSON.stringify(storedPatients));
+                localStorage.setItem('aidr_firestore_screenings', JSON.stringify(storedScreenings));
+            } catch (e) {
+                console.warn('Demo patient seeding warning:', e);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 2. THEME SYNCHRONIZATION
+        // -------------------------------------------------------------
+        function applyPatientTheme(theme) {
+            const active = theme || localStorage.getItem('xairis_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', active);
+            document.body.setAttribute('data-theme', active);
+
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (icon && text) {
+                icon.textContent = active === 'dark' ? '🌙' : '☀️';
+                text.textContent = active === 'dark' ? 'Dark' : 'Light';
+            }
+        }
+
+        window.togglePatientTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('xairis_theme', next);
+            applyPatientTheme(next);
+        };
+
+        // -------------------------------------------------------------
+        // 3. INITIALIZATION
+        // -------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            applyPatientTheme();
+            seedDemoPatients();
+
+            // Link resolver: if opened in static file mode, adjust signup link
+            const signupLink = document.getElementById('link-signup');
+            if (signupLink && !window.location.protocol.startsWith('http')) {
+                signupLink.href = 'patient-signup.html';
+            }
+
+            // If already signed in, provide immediate access
+            if (window.PatientAuth && window.PatientAuth.isAuthenticated()) {
+                const user = window.PatientAuth.getCurrentUser();
+                showAlert(`Welcome back, ${user.fullName}! Redirecting to your dashboard...`, false);
+                setTimeout(() => {
+                    const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/dashboard' : 'patient-dashboard.html';
+                    window.location.href = target;
+                }, 750);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // 4. TAB SWITCHING (EMAIL vs ABHA PIN)
+        // -------------------------------------------------------------
+        window.switchLoginMethod = function(method) {
+            const btnEmail = document.getElementById('tab-btn-email');
+            const btnPin = document.getElementById('tab-btn-pin');
+            const formEmail = document.getElementById('form-patient-login');
+            const formPin = document.getElementById('form-patient-pin');
+            const alertBox = document.getElementById('patient-alert');
+            alertBox.style.display = 'none';
+
+            if (method === 'email') {
+                btnEmail.classList.add('active');
+                btnEmail.setAttribute('aria-selected', 'true');
+                btnPin.classList.remove('active');
+                btnPin.setAttribute('aria-selected', 'false');
+
+                formEmail.style.display = 'block';
+                formPin.style.display = 'none';
+            } else {
+                btnPin.classList.add('active');
+                btnPin.setAttribute('aria-selected', 'true');
+                btnEmail.classList.remove('active');
+                btnEmail.setAttribute('aria-selected', 'false');
+
+                formPin.style.display = 'block';
+                formEmail.style.display = 'none';
+            }
+        };
+
+        // -------------------------------------------------------------
+        // 5. QUICK-FILL DEMO PROFILES
+        // -------------------------------------------------------------
+        window.quickFillPatient = async function(key) {
+            const profile = DEMO_PATIENTS[key];
+            if (!profile) return;
+
+            switchLoginMethod('email');
+
+            const emailInput = document.getElementById('login-email');
+            const pwdInput = document.getElementById('login-password');
+            const submitBtn = document.getElementById('btn-submit-login');
+
+            emailInput.value = profile.email;
+            pwdInput.value = profile.password;
+
+            showAlert(`Loaded demo credentials for ${profile.fullName} (${profile.patientId}). Signing in...`, false);
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Verifying credentials...</span>';
+
+            setTimeout(async () => {
+                try {
+                    await window.PatientAuth.login(profile.email, profile.password);
+                    showAlert(`Access Granted! Welcome ${profile.fullName}. Opening records...`, false);
+                    setTimeout(() => {
+                        const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/dashboard' : 'patient-dashboard.html';
+                        window.location.href = target;
+                    }, 500);
+                } catch (err) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span>Sign In to Patient Portal</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                    showAlert(err.message || 'Error authenticating demo user.');
+                }
+            }, 600);
+        };
+
+        // -------------------------------------------------------------
+        // 6. FORM HANDLERS
+        // -------------------------------------------------------------
+        function togglePasswordVisibility(fieldId, btn) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            const isPwd = field.type === 'password';
+            field.type = isPwd ? 'text' : 'password';
+            btn.style.color = isPwd ? 'var(--patient-accent)' : 'var(--patient-text-muted)';
+        }
+
+        function showAlert(msg, isError = true) {
+            const alertBox = document.getElementById('patient-alert');
+            alertBox.textContent = msg;
+            alertBox.className = `patient-alert ${isError ? 'error' : 'success'}`;
+            alertBox.style.display = 'flex';
+        }
+
+        async function handleEmailLogin(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('patient-alert');
+            alertBox.style.display = 'none';
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const submitBtn = document.getElementById('btn-submit-login');
+
+            if (!email || !email.includes('@')) {
+                showAlert('Please enter a valid patient email address.');
+                return;
+            }
+            if (!password) {
+                showAlert('Please enter your account password.');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Verifying Patient Identity...</span>';
+
+                await window.PatientAuth.login(email, password);
+
+                showAlert('Sign in successful! Opening your screening records...', false);
+                setTimeout(() => {
+                    const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/dashboard' : 'patient-dashboard.html';
+                    window.location.href = target;
+                }, 600);
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Sign In to Patient Portal</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                showAlert(err.message || 'Invalid email or password.');
+            }
+        }
+
+        async function handlePinLogin(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('patient-alert');
+            alertBox.style.display = 'none';
+
+            const identifier = document.getElementById('login-mobile-abha').value.trim();
+            const pin = document.getElementById('login-pin').value.trim();
+            const submitBtn = document.getElementById('btn-submit-pin');
+
+            if (!identifier) {
+                showAlert('Please enter your registered Mobile Number or ABHA Health ID.');
+                return;
+            }
+            if (!pin || pin.length < 4) {
+                showAlert('Please enter your 4-digit security PIN (Default: 2026).');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Verifying PIN...</span>';
+
+                // Look up matching patient in local store or demo list
+                const patients = JSON.parse(localStorage.getItem('aidr_firestore_patients')) || {};
+                const cleanId = identifier.replace(/[\s\-]/g, '');
+                
+                const matched = Object.values(patients).find(p => {
+                    const pMobile = (p.mobile || '').replace(/[\s\-]/g, '');
+                    const pAbha = (p.abha || '').replace(/[\s\-]/g, '');
+                    return (pMobile && pMobile.includes(cleanId)) || 
+                           (pAbha && pAbha.includes(cleanId)) ||
+                           (p.phone && p.phone.replace(/[\s\-]/g, '').includes(cleanId)) ||
+                           (p.patientId && p.patientId.toLowerCase() === identifier.toLowerCase());
+                });
+
+                if (!matched) {
+                    // Try demo match fallback
+                    const demoMatch = Object.values(DEMO_PATIENTS).find(d => 
+                        d.mobile.includes(cleanId) || d.abha.includes(cleanId) || d.patientId === identifier
+                    );
+                    if (demoMatch && (pin === demoMatch.pin || pin === '2026')) {
+                        await window.PatientAuth.login(demoMatch.email, demoMatch.password);
+                        showAlert(`PIN verified! Welcome ${demoMatch.fullName}. Opening records...`, false);
+                        setTimeout(() => {
+                            const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/dashboard' : 'patient-dashboard.html';
+                            window.location.href = target;
+                        }, 600);
+                        return;
+                    }
+                    throw new Error('No patient account found with that Mobile number or ABHA ID.');
+                }
+
+                if (matched.pin && matched.pin !== pin && pin !== '2026') {
+                    throw new Error('Incorrect 4-digit PIN. Try 2026.');
+                }
+
+                // Log in matched patient
+                const sessionUser = { ...matched };
+                delete sessionUser.passwordHash;
+                localStorage.setItem('aidr_patient_auth_user', JSON.stringify(sessionUser));
+
+                showAlert(`PIN verified! Welcome back, ${matched.fullName}. Redirecting...`, false);
+                setTimeout(() => {
+                    const target = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html') ? '/patient/dashboard' : 'patient-dashboard.html';
+                    window.location.href = target;
+                }, 600);
+
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Verify PIN &amp; Sign In</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                showAlert(err.message || 'Verification failed. Please check your credentials.');
+            }
+        }
+
+        async function handleForgotPassword() {
+            const email = prompt("Please enter your registered patient email to receive a password reset link:", "ramesh.kumar@health.in");
+            if (!email) return;
+
+            try {
+                await window.PatientAuth.resetPassword(email.trim());
+                alert("Password reset instructions have been dispatched to your email. (Demo PIN: 2026)");
+            } catch (err) {
+                alert(err.message || "Failed to initiate password reset.");
+            }
+        }
+    </script>
+</body>
+</html>

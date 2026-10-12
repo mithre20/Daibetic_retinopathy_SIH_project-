@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS Clinical — AI-powered medical diagnosis and screening platform for healthcare workers in rural and underserved areas.">
+    <title>XAIRIS Clinical — Intelligent Medical Screening</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="medivision.css">
+</head>
+<body>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="xairis_emblem.png" alt="XAIRIS Logo" style="width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));">
+                <span class="logo-text">XAIRIS <span class="logo-ai">Clinical</span></span>
+            </div>
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main</div>
+            <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-page="patients" id="nav-patients">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 17c0-3.5 3-5.5 7-5.5s7 2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Patient Records</span>
+            </a>
+            <a href="#" class="nav-item" data-page="screening" id="nav-screening">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="1" fill="currentColor"/></svg>
+                <span>AI Screening</span>
+                <span class="nav-badge">3</span>
+            </a>
+            <a href="#" class="nav-item" data-page="reports" id="nav-reports">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v4h4M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <span>Reports</span>
+            </a>
+
+            <div class="nav-section-label">Analytics</div>
+            <a href="#" class="nav-item" data-page="analytics" id="nav-analytics">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V9l4-3 4 5 6-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 17h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="nav-item" data-page="doctors" id="nav-doctors">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M1 17c0-3 2.5-5 6-5M13 17c0-3 2.5-5 6-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span>Doctors</span>
+            </a>
+
+            <div class="nav-section-label">System</div>
+            <a href="#" class="nav-item" data-page="settings" id="nav-settings">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M4.9 15.1l1.4-1.4M13.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="connectivity-status">
+                <span class="status-dot online"></span>
+                <span class="status-text">Online • Synced</span>
+            </div>
+            <div class="low-bandwidth-toggle">
+                <label class="switch-label">
+                    <input type="checkbox" id="low-bandwidth-toggle">
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Low Bandwidth</span>
+                </label>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper" id="main-wrapper">
+        <!-- ===== TOP NAV ===== -->
+        <header class="topnav">
+            <div class="topnav-left">
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 6h14M4 11h14M4 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M12.5 12.5L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    <input type="text" placeholder="Search patients, reports, screenings..." id="global-search">
+                    <kbd>⌘K</kbd>
+                </div>
+            </div>
+            <div class="topnav-right">
+                <!-- Portal Cross-Navigation Shortcuts -->
+                <div class="portal-nav-shortcuts" style="display:flex; align-items:center; gap:8px; margin-right:6px;">
+                    <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('login'); else window.location.href='login.html';" style="background: rgba(0, 136, 185, 0.15); border: 1px solid rgba(0, 136, 185, 0.4); color: #0088b9; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;" title="Staff Login / Switch User">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 17c0-3.5 3-5.5 6-5.5s6 2 6 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                        Staff Login
+                    </button>
+                    <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('dashboard'); else window.location.href='index.html#dashboard';" style="background: rgba(6, 214, 160, 0.15); border: 1px solid rgba(6, 214, 160, 0.35); color: #06d6a0; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="11" y="3" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="3" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/></svg>
+                        Main Dashboard
+                    </button>
+                    <button onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('pipeline'); else window.location.href='index_pipeline_original.html';" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M11 2L4 11h6l-1 7 7-9h-6l1-7z"/></svg>
+                        5-Stage Pipeline
+                    </button>
+                </div>
+
+                <div class="lang-selector" id="lang-selector">
+                    <button class="lang-btn" id="lang-btn">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M2 9h14M9 2c-2.5 2.5-2.5 11.5 0 14M9 2c2.5 2.5 2.5 11.5 0 14" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span id="lang-label">EN</span>
+                    </button>
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <button class="lang-option active" data-lang="en">🇬🇧 English</button>
+                        <button class="lang-option" data-lang="ta">🇮🇳 தமிழ்</button>
+                    </div>
+                </div>
+                <button class="topnav-icon-btn" id="voice-btn" title="Voice Assistant">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="6.5" y="2" width="5" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M4 9a5 5 0 0010 0M9 14v2.5M7 16.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <button class="topnav-icon-btn notification-btn" id="notification-btn" title="Notifications">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3.5 1.5 4.5 1.5 5H2.5c0-.5 1.5-1.5 1.5-5a5 5 0 015-5z" stroke="currentColor" stroke-width="1.5"/><path d="M7.5 15a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="profile-chip" id="profile-chip">
+                    <img src="doctor_avatar.jpg" alt="Dr. Priya Sharma" class="profile-avatar">
+                    <div class="profile-info">
+                        <span class="profile-name">Dr. Priya Sharma</span>
+                        <span class="profile-role">Ophthalmologist</span>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== DASHBOARD PAGE ===== -->
+        <main class="page active" id="page-dashboard">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title" data-en="Dashboard" data-ta="டாஷ்போர்டு">Dashboard</h1>
+                    <p class="page-subtitle" data-en="Welcome back, Dr. Priya. Here's today's overview." data-ta="மீண்டும் வரவேற்கிறோம், டாக்டர் பிரியா. இன்றைய கண்ணோட்டம் இங்கே.">Welcome back, Dr. Priya. Here's today's overview.</p>
+                </div>
+                <div class="page-actions">
+                    <span class="date-display" id="date-display"></span>
+                    <button class="btn btn-primary" id="new-screening-btn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        <span data-en="New Screening" data-ta="புதிய பரிசோதனை">New Screening</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="--accent: #0d9488;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-4 3.5-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="stat-patients">12,847</span>
+                        <span class="stat-label" data-en="Total Patients" data-ta="மொத்த நோயாளிகள்">Total Patients</span>
+                    </div>
+                    <span class="stat-trend up">↑ 12.5%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="--accent: #2563eb;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M11 7v4l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="stat-screenings">8,234</span>
+                        <span class="stat-label" data-en="Screenings Completed" data-ta="முடிந்த பரிசோதனைகள்">Screenings Completed</span>
+                    </div>
+                    <span class="stat-trend up">↑ 8.3%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="--accent: #dc2626;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4l2-4z" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="stat-highrisk">1,482</span>
+                        <span class="stat-label" data-en="High-Risk Cases" data-ta="அதிக ஆபத்து நிகழ்வுகள்">High-Risk Cases</span>
+                    </div>
+                    <span class="stat-trend down">↑ 3.1%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="--accent: #059669;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5L18 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="stat-accuracy">96.7%</span>
+                        <span class="stat-label" data-en="AI Accuracy" data-ta="AI துல்லியம்">AI Accuracy</span>
+                    </div>
+                    <span class="stat-trend up">↑ 0.4%</span>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid">
+                <!-- AI Screening Card (Large) -->
+                <div class="card card-screening" id="card-screening">
+                    <div class="card-header">
+                        <h2 data-en="AI Medical Screening" data-ta="AI மருத்துவ பரிசோதனை">AI Medical Screening</h2>
+                        <span class="card-badge live">● Live</span>
+                    </div>
+
+                    <!-- Explainability Visualization -->
+                    <div class="screening-layout">
+                        <div class="scan-panel">
+                            <div class="scan-image-wrap">
+                                <img src="fundus_scan.jpg" alt="Retinal Fundus Scan" class="scan-image" id="scan-image">
+                                <div class="scan-overlay" id="scan-overlay">
+                                    <canvas id="heatmap-canvas"></canvas>
+                                </div>
+                                <div class="scan-label">Original Scan</div>
+                            </div>
+                            <div class="scan-image-wrap heatmap-view">
+                                <img src="fundus_scan.jpg" alt="AI Heatmap Analysis" class="scan-image">
+                                <div class="scan-overlay active" id="heatmap-overlay">
+                                    <canvas id="heatmap-canvas-2"></canvas>
+                                </div>
+                                <div class="scan-label">AI Attention Map</div>
+                            </div>
+                        </div>
+
+                        <div class="diagnosis-panel">
+                            <!-- AI Diagnosis -->
+                            <div class="diagnosis-card">
+                                <div class="diagnosis-header">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#0d9488" stroke-width="1.8"/><path d="M10 6v4l2.5 1.5" stroke="#0d9488" stroke-width="1.6" stroke-linecap="round"/></svg>
+                                    <span data-en="AI Diagnosis" data-ta="AI நோயறிதல்">AI Diagnosis</span>
+                                </div>
+                                <h3 class="diagnosis-title">Moderate NPDR</h3>
+                                <p class="diagnosis-subtitle">Non-Proliferative Diabetic Retinopathy — ICDR Grade 2</p>
+                                <div class="confidence-meter">
+                                    <div class="confidence-track">
+                                        <div class="confidence-fill" style="width:89%"></div>
+                                    </div>
+                                    <span class="confidence-pct">89%</span>
+                                    <span class="confidence-label" data-en="Confidence" data-ta="நம்பிக்கை">Confidence</span>
+                                </div>
+                            </div>
+
+                            <!-- Risk Classification -->
+                            <div class="risk-classification">
+                                <span class="risk-label" data-en="Risk Level" data-ta="ஆபத்து நிலை">Risk Level</span>
+                                <div class="risk-pills">
+                                    <span class="risk-pill low">Low</span>
+                                    <span class="risk-pill moderate active">Moderate</span>
+                                    <span class="risk-pill high">High</span>
+                                </div>
+                            </div>
+
+                            <!-- Why AI Predicted This -->
+                            <div class="explainability-section">
+                                <h4 data-en="Why AI predicted this" data-ta="AI ஏன் இதை கணித்தது">Why AI predicted this</h4>
+                                <div class="explain-cards">
+                                    <div class="explain-card">
+                                        <span class="explain-icon">🔴</span>
+                                        <div>
+                                            <strong>Microaneurysms detected</strong>
+                                            <p>12 small vascular outpouchings found in the temporal retina, consistent with early diabetic changes.</p>
+                                        </div>
+                                    </div>
+                                    <div class="explain-card">
+                                        <span class="explain-icon">🟡</span>
+                                        <div>
+                                            <strong>Hard exudates present</strong>
+                                            <p>Lipid deposits identified near the macula (0.8% of FOV), indicating fluid leakage from damaged vessels.</p>
+                                        </div>
+                                    </div>
+                                    <div class="explain-card">
+                                        <span class="explain-icon">🟢</span>
+                                        <div>
+                                            <strong>No neovascularization</strong>
+                                            <p>No abnormal new vessel growth detected — disease has not progressed to proliferative stage.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Doctor Actions -->
+                            <div class="doctor-actions">
+                                <button class="btn btn-primary btn-confirm" id="btn-confirm">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span data-en="Confirm Diagnosis" data-ta="நோயறிதலை உறுதிப்படுத்து">Confirm Diagnosis</span>
+                                </button>
+                                <button class="btn btn-outline" id="btn-second-opinion">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                                    <span data-en="Second Opinion" data-ta="இரண்டாவது கருத்து">Second Opinion</span>
+                                </button>
+                                <button class="btn btn-outline" id="btn-generate-report">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l3 3v9a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.4"/></svg>
+                                    <span data-en="Generate Report" data-ta="அறிக்கை உருவாக்கு">Generate Report</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Patients -->
+                <div class="card card-patients">
+                    <div class="card-header">
+                        <h2 data-en="Recent Patients" data-ta="சமீபத்திய நோயாளிகள்">Recent Patients</h2>
+                        <button class="btn btn-text" data-en="View All" data-ta="அனைத்தையும் காண">View All →</button>
+                    </div>
+                    <div class="patients-list" id="patients-list">
+                        <!-- populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Patient Timeline -->
+                <div class="card card-timeline">
+                    <div class="card-header">
+                        <h2 data-en="Patient Timeline" data-ta="நோயாளி காலவரிசை">Patient Timeline</h2>
+                        <span class="card-subtitle">Rajesh Kumar • ID: MV-2847</span>
+                    </div>
+                    <div class="timeline" id="timeline">
+                        <!-- populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <h2 data-en="Screening Trends" data-ta="பரிசோதனை போக்குகள்">Screening Trends</h2>
+                        <div class="chart-tabs">
+                            <button class="chart-tab active" data-range="7d">7D</button>
+                            <button class="chart-tab" data-range="1m">1M</button>
+                            <button class="chart-tab" data-range="3m">3M</button>
+                            <button class="chart-tab" data-range="1y">1Y</button>
+                        </div>
+                    </div>
+                    <canvas id="trends-chart" height="220"></canvas>
+                </div>
+
+                <div class="card card-donut">
+                    <div class="card-header">
+                        <h2 data-en="Risk Distribution" data-ta="ஆபத்து பரவல்">Risk Distribution</h2>
+                    </div>
+                    <canvas id="donut-chart" height="220"></canvas>
+                    <div class="donut-legend" id="donut-legend"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== AI SCREENING PAGE ===== -->
+        <main class="page" id="page-screening">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">AI Screening</h1>
+                    <p class="page-subtitle">Upload a medical scan for AI-assisted diagnosis and explainability analysis.</p>
+                </div>
+            </div>
+            <div class="screening-upload-area">
+                <div class="upload-zone" id="screening-upload-zone">
+                    <div class="upload-zone-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="14" width="36" height="28" rx="4" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="28" r="8" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="28" r="3" fill="currentColor" opacity="0.2"/><path d="M16 14V10a4 4 0 014-4h8a4 4 0 014 4v4" stroke="currentColor" stroke-width="2"/></svg>
+                    </div>
+                    <h3>Upload Medical Scan</h3>
+                    <p>Drop a fundus image here or click to browse</p>
+                    <p class="upload-hint">JPEG, PNG • Best results ≥ 2000×2000 px</p>
+                    <input type="file" accept="image/*" id="screening-file-input" hidden>
+                </div>
+            </div>
+        </main>
+
+        <!-- Placeholder pages -->
+        <main class="page" id="page-patients"><div class="page-header"><div><h1 class="page-title">Patient Records</h1><p class="page-subtitle">Manage and search all patient records.</p></div></div><div class="placeholder-content"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="30" r="14" stroke="#cbd5e1" stroke-width="2.5"/><path d="M12 68c0-14 12-22 28-22s28 8 28 22" stroke="#cbd5e1" stroke-width="2.5"/></svg><p>Patient records module — Coming soon</p></div></main>
+        <main class="page" id="page-reports"><div class="page-header"><div><h1 class="page-title">Reports</h1><p class="page-subtitle">View and generate clinical reports.</p></div></div><div class="placeholder-content"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><path d="M20 12h24l16 16v40a4 4 0 01-4 4H20a4 4 0 01-4-4V16a4 4 0 014-4z" stroke="#cbd5e1" stroke-width="2.5"/><path d="M44 12v16h16M28 40h24M28 50h16" stroke="#cbd5e1" stroke-width="2"/></svg><p>Reports module — Coming soon</p></div></main>
+        <main class="page" id="page-analytics"><div class="page-header"><div><h1 class="page-title">Analytics</h1><p class="page-subtitle">Performance metrics and screening insights.</p></div></div><div class="placeholder-content"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><path d="M12 68V36l16-12 16 20 24-32" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 68h56" stroke="#cbd5e1" stroke-width="2.5"/></svg><p>Analytics module — Coming soon</p></div></main>
+        <main class="page" id="page-doctors"><div class="page-header"><div><h1 class="page-title">Doctors</h1><p class="page-subtitle">Manage physician accounts and specializations.</p></div></div><div class="placeholder-content"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="28" cy="28" r="12" stroke="#cbd5e1" stroke-width="2"/><circle cx="52" cy="28" r="12" stroke="#cbd5e1" stroke-width="2"/><path d="M4 68c0-12 10-20 24-20M52 68c0-12 10-20 24-20" stroke="#cbd5e1" stroke-width="2"/></svg><p>Doctors module — Coming soon</p></div></main>
+        <main class="page" id="page-settings">
+            <div class="page-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+                <div>
+                    <h1 class="page-title">Settings &amp; System Preferences</h1>
+                    <p class="page-subtitle">Configure point-of-care screening parameters, AI explainability thresholds, and local edge node security.</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="if(window.parent && window.parent.switchPortalTab) window.parent.switchPortalTab('settings'); else window.location.href='settings.html';" style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <span>Open Fullscreen Settings Suite ↗</span>
+                    </button>
+                </div>
+            </div>
+            <div style="width:100%; height:calc(100vh - 160px); border-radius:14px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow-md);">
+                <iframe src="settings.html" style="width:100%; height:100%; border:none;" title="Settings Suite"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <!-- Voice Assistant Modal -->
+    <div class="voice-modal" id="voice-modal">
+        <div class="voice-modal-content">
+            <div class="voice-waves" id="voice-waves">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p class="voice-status" id="voice-status">Listening...</p>
+            <button class="btn btn-outline" id="voice-close">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="medivision.js"></script>
+</body>
+</html>

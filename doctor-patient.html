@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Clinical Doctor Patient Profile. Comprehensive longitudinal retinal history, AI screening timeline, and doctor-authored clinical reports.">
+    <title>Patient Profile — Clinical Doctor Portal — XAIRIS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="doctor-portal.css">
+
+    <script>
+        if (window.top && window.top !== window.self) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="doc-bg-ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="doc-navbar-top">
+        <div class="navbar-brand-wrap">
+            <a href="/doctor/dashboard" class="navbar-brand-wrap">
+                <img src="xairis_emblem.png" alt="XAIRIS Emblem" class="navbar-brand-logo">
+                <span class="navbar-brand-title">XAIRIS <span class="badge-portal badge-doctor" style="margin-left:8px;">DOCTOR PORTAL</span></span>
+            </a>
+        </div>
+
+        <nav class="doc-nav-links">
+            <a href="/doctor/dashboard" class="doc-nav-btn">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                <span>Dashboard</span>
+            </a>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="doc-nav-btn" id="btn-theme-toggle" onclick="toggleDoctorTheme()" title="Toggle Light / Dark Theme" style="padding:6px 12px;">
+                <span id="theme-icon">🌙</span>
+            </button>
+
+            <div class="doc-user-chip">
+                <div class="doc-avatar" id="nav-doc-avatar">D</div>
+                <div class="doc-info">
+                    <span class="doc-name" id="nav-doc-name">Dr. Anitha Rajan</span>
+                    <span class="doc-role" id="nav-doc-role">Thirunallur PHC</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="doc-container">
+
+        <!-- Breadcrumbs & Actions -->
+        <div class="doc-page-header">
+            <div>
+                <div class="doc-breadcrumb">
+                    <a href="/doctor/dashboard">Doctor Dashboard</a>
+                    <span>/</span>
+                    <a href="/doctor/dashboard#search-section">Patients</a>
+                    <span>/</span>
+                    <span class="current" id="breadcrumb-patient-id">Patient Profile</span>
+                </div>
+                <h1 class="doc-page-title">
+                    <span id="patient-name-heading">Patient Record</span>
+                    <span class="provenance-pill provenance-ai" id="patient-badge-id">P-00000</span>
+                </h1>
+                <p class="doc-page-subtitle">
+                    Longitudinal Retinal Dossier • Secure Tele-Ophthalmic Review Terminal
+                </p>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <a href="/doctor/dashboard" class="btn-doc-outline">
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 1. Patient Demographics Card -->
+        <section class="doc-form-card" style="margin-bottom: 24px;">
+            <div class="doc-form-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:20px;">👤</span>
+                    <div>
+                        <h3 style="font-size:16px; font-weight:700;">Patient Demographics &amp; Health ID</h3>
+                        <span style="font-size:11.5px; color:var(--doc-text-muted);">ABDM Milestone 2 Integrated Telemedicine Dossier</span>
+                    </div>
+                </div>
+                <span class="status-pill status-completed">ABDM Verified</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;">
+                <div>
+                    <span class="doc-form-label">Patient Unique ID</span>
+                    <strong id="p-id" style="font-family:var(--font-mono); color:var(--doc-accent); font-size:15px;">—</strong>
+                </div>
+                <div>
+                    <span class="doc-form-label">Full Name</span>
+                    <strong id="p-name" style="font-size:15px;">—</strong>
+                </div>
+                <div>
+                    <span class="doc-form-label">Age &amp; Gender</span>
+                    <span id="p-age-gender" style="font-size:14px;">—</span>
+                </div>
+                <div>
+                    <span class="doc-form-label">District / Location</span>
+                    <span id="p-district" style="font-size:14px;">—</span>
+                </div>
+                <div>
+                    <span class="doc-form-label">Registered Phone</span>
+                    <span id="p-phone" style="font-family:var(--font-mono); font-size:13.5px;">—</span>
+                </div>
+                <div>
+                    <span class="doc-form-label">Initial Enrollment Date</span>
+                    <span id="p-created" style="font-size:13.5px;">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Screening Summary Strip -->
+        <section class="doc-kpi-grid">
+            <div class="doc-kpi-card">
+                <div class="doc-kpi-label">Total Screenings</div>
+                <div class="doc-kpi-value" id="stat-total-screenings">0</div>
+                <div class="doc-kpi-sub">Retinal photography sessions</div>
+            </div>
+
+            <div class="doc-kpi-card">
+                <div class="doc-kpi-label">Latest AI Classification</div>
+                <div class="doc-kpi-value" id="stat-latest-grade" style="font-size: 20px; margin: 12px 0 6px;">—</div>
+                <div class="doc-kpi-sub" id="stat-latest-date">Scan date: —</div>
+            </div>
+
+            <div class="doc-kpi-card">
+                <div class="doc-kpi-label">Current Clinical Risk Tier</div>
+                <div class="doc-kpi-value" id="stat-latest-risk" style="font-size: 20px; margin: 12px 0 6px;">—</div>
+                <div class="doc-kpi-sub">Automated triage category</div>
+            </div>
+
+            <div class="doc-kpi-card" style="border-left: 4px solid var(--doc-emerald);">
+                <div class="doc-kpi-label">Last Doctor Review</div>
+                <div class="doc-kpi-value" id="stat-doctor-review" style="font-size: 16px; margin: 12px 0 6px; color:#34d399;">—</div>
+                <div class="doc-kpi-sub" id="stat-doctor-author">Clinician: —</div>
+            </div>
+        </section>
+
+        <!-- 3. Chronological Screening History -->
+        <section class="doc-table-card">
+            <div class="doc-table-header">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+                        <span>📷 Retinal Screening History (Chronological)</span>
+                    </h3>
+                    <p style="font-size: 12px; color: var(--doc-text-muted); margin-top:2px;">
+                        Click "Review Screening" to inspect AI predictions, Grad-CAM attention, U-Net segmentations, and author clinical reports.
+                    </p>
+                </div>
+            </div>
+
+            <div id="screenings-list-container" style="padding: 16px;">
+                <div style="text-align:center; padding:32px; color:var(--doc-text-muted);">
+                    Loading patient screening history...
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Clinical Reports & Attached Documents Repository -->
+        <section class="doc-table-card">
+            <div class="doc-table-header">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+                        <span>📋 Doctor-Authored Clinical Reports &amp; Documents</span>
+                    </h3>
+                    <p style="font-size: 12px; color: var(--doc-text-muted); margin-top:2px;">
+                        Archived medical assessments and uploaded PDF / image documents for this patient
+                    </p>
+                </div>
+            </div>
+
+            <div id="reports-list-container" style="padding: 16px;">
+                <div style="text-align:center; padding:24px; color:var(--doc-text-muted);">
+                    No previous doctor reports recorded yet.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Firebase SDK & Client Service -->
+    <script src="firebase-config.js"></script>
+    <script>
+        let patientUid = null;
+        let currentPatientData = null;
+
+        // Theme management
+        function applyDoctorTheme() {
+            const theme = localStorage.getItem('xairis_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        window.toggleDoctorTheme = function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('xairis_theme', next);
+            applyDoctorTheme();
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            applyDoctorTheme();
+
+            if (!window.DoctorAuth || !window.DoctorAuth.isAuthenticated()) {
+                window.location.href = 'login.html?role=doctor';
+                return;
+            }
+
+            const doc = window.DoctorAuth.getCurrentDoctor();
+            if (doc) {
+                document.getElementById('nav-doc-name').textContent = doc.fullName || 'Doctor';
+                document.getElementById('nav-doc-role').textContent = doc.hospitalOrClinic || 'Clinical Station';
+                document.getElementById('nav-doc-avatar').textContent = (doc.fullName || 'D').replace('Dr. ', '').charAt(0).toUpperCase();
+            }
+
+            // Extract patientUid from pathname /doctor/patient/:patientUid or URL query param ?uid=...
+            const pathParts = window.location.pathname.split('/');
+            const pIdx = pathParts.indexOf('patient');
+            if (pIdx !== -1 && pathParts[pIdx + 1]) {
+                patientUid = pathParts[pIdx + 1];
+            } else {
+                const params = new URLSearchParams(window.location.search);
+                patientUid = params.get('uid') || params.get('id') || 'usr_ramesh';
+            }
+
+            await loadPatientData(patientUid);
+        });
+
+        async function loadPatientData(uid) {
+            try {
+                const data = await window.DoctorClinical.getPatientProfile(uid);
+                currentPatientData = data;
+                renderPatientProfile(data);
+            } catch (err) {
+                console.error('Failed to load patient data:', err);
+                document.getElementById('patient-name-heading').textContent = 'Patient Not Found';
+                document.getElementById('screenings-list-container').innerHTML = `
+                    <div style="text-align:center; padding:32px; color:#f87171;">
+                        Error loading patient record: ${err.message || 'Record does not exist.'}
+                    </div>
+                `;
+            }
+        }
+
+        function renderPatientProfile(data) {
+            const p = data.patient;
+            document.getElementById('breadcrumb-patient-id').textContent = `${p.fullName} (${p.patientId})`;
+            document.getElementById('patient-name-heading').textContent = p.fullName;
+            document.getElementById('patient-badge-id').textContent = p.patientId;
+
+            document.getElementById('p-id').textContent = p.patientId;
+            document.getElementById('p-name').textContent = p.fullName;
+            document.getElementById('p-age-gender').textContent = `${p.age || '—'} yrs • ${p.gender || 'Not specified'}`;
+            document.getElementById('p-district').textContent = p.district || 'Rural Health Mission';
+            document.getElementById('p-phone').textContent = p.phone || 'Protected';
+            document.getElementById('p-created').textContent = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+            // Summary cards
+            const screenings = data.screenings || [];
+            document.getElementById('stat-total-screenings').textContent = screenings.length;
+
+            const latest = screenings[0] || null;
+            if (latest) {
+                const gradeClass = `grade-${latest.drClass !== undefined ? latest.drClass : 0}`;
+                document.getElementById('stat-latest-grade').innerHTML = `<span class="grade-badge ${gradeClass}">${latest.drLabel || 'Grade ' + latest.drClass}</span>`;
+                document.getElementById('stat-latest-date').textContent = `Screened: ${new Date(latest.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}`;
+                document.getElementById('stat-latest-risk').textContent = latest.riskLevel || 'Standard';
+            } else {
+                document.getElementById('stat-latest-grade').textContent = 'None';
+                document.getElementById('stat-latest-risk').textContent = 'None';
+            }
+
+            // Doctor review status
+            const reports = data.clinicalReports || [];
+            if (reports.length > 0) {
+                const latestRep = reports[0];
+                document.getElementById('stat-doctor-review').textContent = '✓ Completed';
+                document.getElementById('stat-doctor-author').textContent = `${latestRep.doctorName} (${new Date(latestRep.updatedAt || latestRep.createdAt).toLocaleDateString('en-GB')})`;
+            } else {
+                document.getElementById('stat-doctor-review').innerHTML = '<span style="color:#fbbf24;">⏳ Pending</span>';
+                document.getElementById('stat-doctor-author').textContent = 'No reports yet';
+            }
+
+            // Render Screening History Cards
+            const container = document.getElementById('screenings-list-container');
+            if (screenings.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:32px; color:var(--doc-text-muted);">No retinal screenings recorded for this patient.</div>`;
+            } else {
+                container.innerHTML = screenings.map((s, idx) => {
+                    const grade = s.drClass !== undefined ? s.drClass : 0;
+                    const gradeClass = `grade-${grade}`;
+                    const statusHtml = s.doctorReviewStatus === 'COMPLETED'
+                        ? '<span class="status-pill status-completed">✓ Doctor Review Completed</span>'
+                        : '<span class="status-pill status-pending">⏳ Clinical Review Pending</span>';
+
+                    const reviewUrl = window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('.html')
+                        ? `/doctor/patient/${p.uid}/screening/${s.screeningId}`
+                        : `doctor-screening.html?uid=${p.uid}&id=${s.screeningId}`;
+
+                    return `
+                        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--doc-border); border-radius:10px; padding:18px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                            <div style="display:flex; gap:16px; align-items:center;">
+                                <div style="width:56px; height:56px; border-radius:8px; overflow:hidden; border:1px solid var(--doc-border); background:#000; flex-shrink:0;">
+                                    <img src="${s.imageUrl || 'fundus_scan.jpg'}" alt="Fundus" style="width:100%; height:100%; object-fit:cover;">
+                                </div>
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                        <strong style="font-family:var(--font-mono); color:var(--doc-accent); font-size:13.5px;">${s.screeningId}</strong>
+                                        <span style="font-size:12px; color:var(--doc-text-muted);">•</span>
+                                        <span style="font-size:12px; color:var(--doc-text-muted);">${new Date(s.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</span>
+                                        <span class="report-eye-pill" style="font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.06);">👁️ ${s.eye || 'OD'}</span>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span class="grade-badge ${gradeClass}">${s.drLabel || 'Grade ' + grade}</span>
+                                        <span style="font-size:12px; color:var(--doc-text-secondary); font-family:var(--font-mono);">Confidence: ${(s.confidence * 100).toFixed(1)}%</span>
+                                        <span class="provenance-pill provenance-ai">AI PREDICTION</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                ${statusHtml}
+                                <a href="${reviewUrl}" class="btn-doc-primary" style="padding:8px 16px; font-size:13px;">
+                                    <span>${s.doctorReviewStatus === 'COMPLETED' ? 'Edit / View Review' : 'Start Clinical Review'}</span>
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Render Reports and Documents
+            const repContainer = document.getElementById('reports-list-container');
+            if (reports.length === 0) {
+                repContainer.innerHTML = `<div style="text-align:center; padding:24px; color:var(--doc-text-muted);">No doctor reports or clinical attachments authored yet.</div>`;
+            } else {
+                repContainer.innerHTML = reports.map(r => {
+                    const docList = (r.attachedDocuments || []).map(d => `
+                        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; padding:4px 10px; margin-top:6px; font-size:12px;">
+                            <span>📄 ${d.fileName}</span>
+                            <span style="color:var(--doc-text-muted); font-size:11px;">(${d.fileSize})</span>
+                            <a href="${d.url}" target="_blank" style="color:var(--doc-accent); font-weight:600; margin-left:6px; text-decoration:none;">View/Download</a>
+                        </div>
+                    `).join('');
+
+                    return `
+                        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(16,185,129,0.25); border-radius:10px; padding:18px; margin-bottom:14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span class="provenance-pill provenance-doctor">DOCTOR REPORT</span>
+                                        <strong style="font-size:15px; color:var(--doc-text-primary);">${r.diagnosis || 'Clinical Assessment'}</strong>
+                                        <span style="font-size:11px; font-family:var(--font-mono); color:var(--doc-emerald);">v${r.version || 1}.0</span>
+                                    </div>
+                                    <span style="font-size:12px; color:var(--doc-text-muted);">Authored by <strong>${r.doctorName}</strong> (${r.doctorHospital}) • Ref Screening: <strong style="font-family:var(--font-mono);">${r.screeningId}</strong></span>
+                                </div>
+                                <span style="font-size:11.5px; color:var(--doc-text-muted);">${new Date(r.updatedAt || r.createdAt).toLocaleString('en-GB')}</span>
+                            </div>
+
+                            <div style="font-size:13px; color:var(--doc-text-secondary); background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; margin:10px 0;">
+                                <strong>Assessment:</strong> ${r.clinicalAssessment}
+                                <br>
+                                <strong style="margin-top:6px; display:inline-block;">Recommendation:</strong> ${r.recommendations || 'Follow standard protocol'}
+                                ${r.followUpDate ? `<br><strong>Scheduled Follow-up:</strong> ${r.followUpDate}` : ''}
+                            </div>
+
+                            ${docList ? `<div style="margin-top:8px;">${docList}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+    </script>
+</body>
+</html>

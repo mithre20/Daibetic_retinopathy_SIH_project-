@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XAIRIS — Comprehensive Clinical Patient Dossier & Longitudinal Retinal AI Analysis. AI That Sees. AI That Explains.">
+    <title>Patient Clinical Profile — XAIRIS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="patient-details.css">
+</head>
+<body>
+
+    <!-- Ambient Glowing Accents -->
+    <div class="ambient-glow ambient-glow-1" aria-hidden="true"></div>
+    <div class="ambient-glow ambient-glow-2" aria-hidden="true"></div>
+
+    <div class="details-wrapper">
+
+        <!-- ============================================================
+             1. TOP NAVIGATION BAR & BREADCRUMBS
+             ============================================================ -->
+        <header class="details-topbar">
+            <div class="topbar-left">
+                <a href="dashboard.html" class="btn-back" id="btn-back-to-dashboard" title="Return to Screening Dashboard">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </a>
+
+                <div class="breadcrumb-trail">
+                    <a href="dashboard.html">Screening Dashboard</a>
+                    <span>/</span>
+                    <a href="dashboard.html">Patient Registry</a>
+                    <span>/</span>
+                    <span class="current" id="p-breadcrumb-name">Ramesh Kumar (DR25072026)</span>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <!-- Patient Switcher -->
+                <div class="patient-select-wrap">
+                    <label for="patient-select-dropdown">Select Patient:</label>
+                    <select id="patient-select-dropdown" class="patient-select-dropdown">
+                        <option value="DR25072026">Ramesh Kumar (DR25072026)</option>
+                        <option value="DR25072027">Lakshmi Ammal (DR25072027)</option>
+                        <option value="DR25072028">Murugan P. (DR25072028)</option>
+                    </select>
+                </div>
+
+                <!-- Print / Export Action -->
+                <button class="btn-action-outline" onclick="printPatientReport()" title="Print full clinical profile or save as PDF">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 6V2h8v4M4 12H2.5A1.5 1.5 0 011 10.5v-3A1.5 1.5 0 012.5 6h11A1.5 1.5 0 0115 7.5v3a1.5 1.5 0 01-1.5 1.5H12" stroke="currentColor" stroke-width="1.4"/>
+                        <path d="M4 9h8v5H4V9z" stroke="currentColor" stroke-width="1.4"/>
+                    </svg>
+                    <span>Print / Export PDF</span>
+                </button>
+
+                <!-- Trigger Rapid Tele-referral -->
+                <button class="btn-action-primary" onclick="triggerSmsAlert()" title="Send WhatsApp & SMS alert to patient & ASHA worker">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 3h12a1 1 0 011 1v8a1 1 0 01-1 1H4l-3 3V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/>
+                    </svg>
+                    <span>Send SMS Referral</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ============================================================
+             2. MASTER PATIENT BANNER (Matches user visual reference & expands)
+             ============================================================ -->
+        <section class="master-patient-card" aria-label="Patient Demographic Summary">
+            <div class="patient-header-grid">
+                
+                <!-- Avatar -->
+                <div class="patient-avatar-large">
+                    <svg width="38" height="38" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="12" r="5.5" stroke="#fbbf24" stroke-width="2.2"/>
+                        <path d="M5 28c0-6.5 5-10 11-10s11 3.5 11 10" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <!-- Core Details Identifiers -->
+                <div class="patient-identity-block">
+                    <div class="patient-title-row">
+                        <h1 class="patient-name-large" id="p-name-large">Ramesh Kumar</h1>
+                        <span class="badge-abha" id="p-abha-val">ABHA: 91-4458-3921-0029</span>
+                        <span class="badge-severity moderate" id="p-severity-badge">Moderate NPDR</span>
+                    </div>
+
+                    <div class="patient-meta-fields">
+                        <div class="meta-field-item">
+                            <span class="meta-field-label">Patient ID</span>
+                            <span class="meta-field-value accent" id="p-id-val">DR25072026</span>
+                        </div>
+                        <div class="meta-field-item">
+                            <span class="meta-field-label">Age / Gender</span>
+                            <span class="meta-field-value" id="p-age-gender">58 / Male</span>
+                        </div>
+                        <div class="meta-field-item">
+                            <span class="meta-field-label">Diabetes Duration</span>
+                            <span class="meta-field-value" id="p-duration">8 Years</span>
+                        </div>
+                        <div class="meta-field-item">
+                            <span class="meta-field-label">Village / Location</span>
+                            <span class="meta-field-value" id="p-village">Thirunallur, Tamil Nadu</span>
+                        </div>
+                        <div class="meta-field-item">
+                            <span class="meta-field-label">Primary Health Centre</span>
+                            <span class="meta-field-value" id="p-phc">Primary Health Centre — Zone 4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Triage & Clinical Status Status Box -->
+                <div class="patient-header-triage">
+                    <div class="triage-indicator">
+                        <span class="pulse-circle"></span>
+                        <span>REFERRAL RECOMMENDED</span>
+                    </div>
+                    <div style="font-size: 15px; font-weight: 800; color: #f59e0b;" id="p-icdr-text">
+                        Moderate NPDR (Grade 2)
+                    </div>
+                    <div style="font-size: 12px; color: var(--accent); font-weight: 600;" id="p-confidence-text">
+                        92.4% AI Confidence
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             3. CLINICAL NAVIGATION TABS
+             ============================================================ -->
+        <nav class="clinical-tabs-nav" aria-label="Patient Detail Sections">
+            <button class="tab-btn active" data-tab="tab-overview">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
+                <span>Clinical Overview & Vitals</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-retinal">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2.5" fill="currentColor"/></svg>
+                <span>Retinal AI Diagnostics</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-timeline">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M5 4l-3 4 3 4M14 4v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span>Screening History</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-referral">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.5"/><path d="M7 6h4M7 9h4" stroke="currentColor" stroke-width="1.5"/></svg>
+                <span>Care Pathway & Referral Slip</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-notes">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 2l2 2-9 9H3v-2l9-9z" stroke="currentColor" stroke-width="1.5"/></svg>
+                <span>Doctor's Clinical Notes</span>
+            </button>
+        </nav>
+
+        <!-- ============================================================
+             TAB 1: CLINICAL OVERVIEW & VITALS
+             ============================================================ -->
+        <div id="tab-overview" class="tab-panel active">
+            <!-- Vitals Mini Cards -->
+            <div class="vitals-cards-row">
+                <div class="vital-card">
+                    <div class="vital-card-top">
+                        <span class="vital-label">HbA1c Level</span>
+                        <span class="vital-status danger" id="vital-hba1c-status">Elevated</span>
+                    </div>
+                    <span class="vital-value" id="vital-hba1c">8.6%</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Target: &lt; 7.0% (T2DM)</span>
+                </div>
+
+                <div class="vital-card">
+                    <div class="vital-card-top">
+                        <span class="vital-label">Blood Pressure</span>
+                        <span class="vital-status warning" id="vital-bp-status">Pre-HTN</span>
+                    </div>
+                    <span class="vital-value" id="vital-bp">138/86</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">mmHg (Sitting, Right Arm)</span>
+                </div>
+
+                <div class="vital-card">
+                    <div class="vital-card-top">
+                        <span class="vital-label">Fasting Blood Sugar</span>
+                        <span class="vital-status warning">Above Target</span>
+                    </div>
+                    <span class="vital-value" id="vital-fbs">178 mg/dL</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">PPBS: <strong id="vital-ppbs" style="color:var(--text-bright);">245 mg/dL</strong></span>
+                </div>
+
+                <div class="vital-card">
+                    <div class="vital-card-top">
+                        <span class="vital-label">Visual Acuity (Snellen)</span>
+                        <span class="vital-status normal">Recorded</span>
+                    </div>
+                    <div style="display:flex; gap:16px; align-items:baseline;">
+                        <span class="vital-value" style="font-size:20px;">OD: <strong id="vital-va-od" style="color:var(--accent);">6/12</strong></span>
+                        <span class="vital-value" style="font-size:20px;">OS: <strong id="vital-va-os" style="color:#60a5fa;">6/9</strong></span>
+                    </div>
+                    <span style="font-size: 11px; color: var(--text-muted);">BMI: <strong id="vital-bmi" style="color:var(--text-bright);">26.4 kg/m²</strong> (Overweight)</span>
+                </div>
+            </div>
+
+            <!-- Two-Column Clinical Breakdown -->
+            <div class="details-grid-2col">
+                <!-- Left Box: Comprehensive History & Demographics -->
+                <div class="card-box">
+                    <div class="card-box-header">
+                        <h2 class="card-box-title">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.8"/><path d="M7 8h6M7 12h4" stroke="currentColor" stroke-width="1.6"/></svg>
+                            Patient Demographics & Clinical History
+                        </h2>
+                    </div>
+                    <div class="details-data-list">
+                        <div class="data-row">
+                            <span class="data-key">Date of Birth</span>
+                            <span class="data-val" id="p-dob">14-Aug-1968 (Age 58)</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-key">Primary Contact</span>
+                            <span class="data-val" id="p-phone">+91 94432 87102</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-key">Diabetes Subtype</span>
+                            <span class="data-val" id="p-dm-type">Type 2 Diabetes Mellitus (8 Years)</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-key">Care Coordinator / ASHA</span>
+                            <span class="data-val" id="p-asha">Kamala Devi (ID: ASHA-TN-402)</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-key">Known Allergies</span>
+                            <span class="data-val" id="p-allergies">No Known Drug Allergies (NKDA)</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-key">Comorbid Conditions</span>
+                            <span class="data-val" id="p-comorbidities">Stage 1 Essential Hypertension, Distal Neuropathy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Box: Prescribed Medications & Regimen -->
+                <div class="card-box">
+                    <div class="card-box-header">
+                        <h2 class="card-box-title">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.6"/></svg>
+                            Active Prescriptions & Regimen
+                        </h2>
+                        <span style="font-size:11px; color:var(--text-muted);">Source: PHC E-Prescription</span>
+                    </div>
+                    <div class="med-list" id="medications-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             TAB 2: RETINAL AI DIAGNOSTICS & HEATMAP VIEWER
+             ============================================================ -->
+        <div id="tab-retinal" class="tab-panel">
+            <div class="retinal-viewer-layout">
+                
+                <!-- Main Canvas & Fundus Image Viewport -->
+                <div class="scan-viewport-container">
+                    <img src="fundus_scan.jpg" alt="Retinal Fundus Scan" class="scan-viewport-img" id="scan-img">
+                    <canvas id="scan-canvas" class="scan-canvas-overlay"></canvas>
+
+                    <!-- Eye Badge Indicator -->
+                    <div class="scan-eye-indicator" id="scan-eye-badge">OD — Right Eye</div>
+
+                    <!-- Scan Controls Float -->
+                    <div class="scan-controls-bar">
+                        <button class="btn-scan-ctrl btn-eye-select active" data-eye="OD">Right Eye (OD)</button>
+                        <button class="btn-scan-ctrl btn-eye-select" data-eye="OS">Left Eye (OS)</button>
+                    </div>
+                </div>
+
+                <!-- Right Diagnostic Sidebar -->
+                <div class="scan-biomarkers-sidebar">
+                    <div class="biomarker-summary-card">
+                        <h4>AI Retinal Assessment</h4>
+                        <p><strong>Primary Grade:</strong> Moderate Non-Proliferative Diabetic Retinopathy (NPDR, ICDR Level 2).</p>
+                        <p style="margin-top:6px;"><strong>Macular Status:</strong> <span id="lesion-csme" style="color:#f59e0b;">Moderate CSME risk (temporal macular ring)</span>.</p>
+                    </div>
+
+                    <!-- Biomarker Count Badges -->
+                    <div class="card-box" style="padding:16px;">
+                        <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Detected Micro-Lesions</span>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                            <div style="background:var(--bg-card); padding:10px; border-radius:6px; border-left:3px solid #ef4444;">
+                                <div style="font-size:11px; color:var(--text-secondary);">Microaneurysms</div>
+                                <div style="font-size:20px; font-weight:800; color:#ef4444;" id="lesion-ma-count">14</div>
+                            </div>
+                            <div style="background:var(--bg-card); padding:10px; border-radius:6px; border-left:3px solid #fbbf24;">
+                                <div style="font-size:11px; color:var(--text-secondary);">Hard Exudates</div>
+                                <div style="font-size:20px; font-weight:800; color:#fbbf24;" id="lesion-exudate-count">6</div>
+                            </div>
+                            <div style="background:var(--bg-card); padding:10px; border-radius:6px; border-left:3px solid #f97316;">
+                                <div style="font-size:11px; color:var(--text-secondary);">Hemorrhages</div>
+                                <div style="font-size:20px; font-weight:800; color:#f97316;" id="lesion-hem-count">4</div>
+                            </div>
+                            <div style="background:var(--bg-card); padding:10px; border-radius:6px; border-left:3px solid #06d6a0;">
+                                <div style="font-size:11px; color:var(--text-secondary);">Quality Score</div>
+                                <div style="font-size:20px; font-weight:800; color:#06d6a0;">98.2%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Layer Inspection Toggles -->
+                    <div class="layer-toggle-group">
+                        <div class="layer-toggle-title">Interactive AI Overlays</div>
+                        
+                        <div class="layer-toggle-item">
+                            <span>Grad-CAM Attention Heatmap</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-gradcam" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="layer-toggle-item">
+                            <span style="color:#ef4444;">Microaneurysm Markers</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-ma" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="layer-toggle-item">
+                            <span style="color:#fbbf24;">Hard Exudates Clusters</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-exudates" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="layer-toggle-item">
+                            <span style="color:#06d6a0;">Optic Disc & Fovea Rings</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-landmarks" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================================
+             TAB 3: SCREENING HISTORY & LONGITUDINAL PROGRESSION
+             ============================================================ -->
+        <div id="tab-timeline" class="tab-panel">
+            <div class="card-box">
+                <div class="card-box-header">
+                    <h2 class="card-box-title">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5"/></svg>
+                        Longitudinal Retinopathy Screening Progression
+                    </h2>
+                    <span style="font-size:12px; color:var(--text-secondary);">Historical comparative analysis from field records</span>
+                </div>
+
+                <div class="timeline-container" id="timeline-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             TAB 4: CARE PATHWAY & REFERRAL SLIP
+             ============================================================ -->
+        <div id="tab-referral" class="tab-panel">
+            <div class="details-grid-2col">
+                
+                <!-- Printable Referral Slip Preview -->
+                <div class="referral-slip-preview" id="referral-slip-printable">
+                    <div class="slip-header">
+                        <div class="slip-header-title">
+                            <h3>AYUSHMAN BHARAT DIGITAL MISSION (ABDM)</h3>
+                            <p>Specialist Retinopathy Fast-Track Referral Slip — Zone 4 PHC</p>
+                        </div>
+                        <div style="text-align:right; font-size:11px; color:#4b5563;">
+                            <strong>Date:</strong> 25-Jul-2026<br>
+                            <strong>Slip ID:</strong> REF-TN-2026-9041
+                        </div>
+                    </div>
+
+                    <div class="slip-body">
+                        <div class="slip-grid">
+                            <div><strong>Patient:</strong> <span id="slip-patient-name">Ramesh Kumar</span></div>
+                            <div><strong>Patient ID:</strong> <span id="slip-patient-id">DR25072026</span></div>
+                            <div><strong>ABHA Health ID:</strong> <span id="slip-patient-abha">91-4458-3921-0029</span></div>
+                            <div><strong>Age / Gender:</strong> <span id="slip-patient-age-gender">58 / Male</span></div>
+                            <div><strong>Location:</strong> <span id="slip-patient-village">Thirunallur</span></div>
+                            <div><strong>Latest HbA1c:</strong> <span id="slip-hba1c" style="color:#b91c1c; font-weight:bold;">8.6%</span></div>
+                        </div>
+
+                        <div style="background:#fef3c7; border:1px solid #fde68a; padding:10px 14px; border-radius:6px; color:#92400e;">
+                            <strong>AI Triage Grading:</strong> <span id="slip-icdr">Moderate NPDR (Grade 2)</span><br>
+                            <strong>Urgency:</strong> Specialty Vitreoretinal Consultation within 2 to 4 weeks.
+                        </div>
+
+                        <div>
+                            <strong>Clinical Impression & Referral Justification:</strong>
+                            <p id="slip-notes" style="margin-top:4px; color:#374151;">
+                                Microaneurysms detected in temporal macular arcade with early hard exudates. Risk of center-involving macular edema requires dilated fundus exam and OCT.
+                            </p>
+                        </div>
+
+                        <div class="slip-footer">
+                            <div>
+                                <strong>Referring Center:</strong> Thirunallur Primary Health Center<br>
+                                <strong>Assigned Center:</strong> District General Hospital — Dept of Ophthalmology
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-family:'Courier New', monospace; font-size:12px; color:#1e40af; font-weight:bold;">DIGITALLY SIGNED</div>
+                                <span>Dr. Anitha Rajan (MBBS, DNB)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Care Pathway Actions & Telemedicine Controls -->
+                <div class="card-box">
+                    <div class="card-box-header">
+                        <h2 class="card-box-title">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2L4 11h6l-1 7 7-9h-6l1-7z" fill="currentColor"/></svg>
+                            Care Pathway & Tele-Triage Actions
+                        </h2>
+                    </div>
+
+                    <p style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:18px;">
+                        The patient has been categorized under <strong>Tier-2 Secondary Hospital Care Pathway</strong> based on ICDR Grade 2 findings. Complete the steps below to dispatch instructions.
+                    </p>
+
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <button class="btn-action-primary" onclick="window.printPatientReport()" style="justify-content:center; padding:12px;">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6V2h8v4M4 12H2.5A1.5 1.5 0 011 10.5v-3A1.5 1.5 0 012.5 6h11A1.5 1.5 0 0115 7.5v3a1.5 1.5 0 01-1.5 1.5H12" stroke="currentColor" stroke-width="1.4"/><path d="M4 9h8v5H4V9z" stroke="currentColor" stroke-width="1.4"/></svg>
+                            <span>Print Physical Referral Slip</span>
+                        </button>
+
+                        <button class="btn-action-outline" onclick="window.triggerSmsAlert()" style="justify-content:center; padding:12px;">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h12a1 1 0 011 1v8a1 1 0 01-1 1H4l-3 3V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/></svg>
+                            <span>Dispatch Tamil & English Patient SMS Reminder</span>
+                        </button>
+
+                        <button class="btn-action-outline" onclick="window.sendTeleconsultQueue()" style="justify-content:center; padding:12px;">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5"/></svg>
+                            <span>Queue for District Tele-Ophthalmology Review</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top:24px; padding:14px; background:rgba(6,214,160,0.06); border:1px solid rgba(6,214,160,0.2); border-radius:var(--radius-md);">
+                        <strong style="color:var(--accent); font-size:12px; display:block; margin-bottom:4px;">ABDM Health Record Interoperability</strong>
+                        <p style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
+                            This report adheres to Ayushman Bharat Digital Mission (ABDM) FHIR Release 4 standard. Encrypted payload is signed with SHA-256 certificate.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================================
+             TAB 5: DOCTOR'S CLINICAL NOTES
+             ============================================================ -->
+        <div id="tab-notes" class="tab-panel">
+            <div class="card-box">
+                <div class="card-box-header">
+                    <h2 class="card-box-title">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M12 2l2 2-9 9H3v-2l9-9z" stroke="currentColor" stroke-width="1.5"/></svg>
+                        Attending Physician Clinical Notes & Observations
+                    </h2>
+                    <span style="font-size:12px; color:var(--text-secondary);">Logged by Dr. Anitha Rajan (Medical Lead)</span>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <textarea id="doctor-notes-textarea" class="notes-textarea" placeholder="Enter clinical observations, lesion remarks, and follow-up guidance..."></textarea>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:12px; color:var(--text-muted);">
+                        Changes are saved locally to the patient's digital health record.
+                    </div>
+                    <button class="btn-action-primary" id="btn-save-notes">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/><path d="M6 3v3h4V3M5 13v-4h6v4" stroke="currentColor" stroke-width="1.6"/></svg>
+                        <span>Save Clinical Notes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Master Toast Notification -->
+    <div id="patient-toast" role="status" aria-live="polite"></div>
+
+    <!-- Controller Script -->
+    <script src="patient-details.js"></script>
+</body>
+</html>
